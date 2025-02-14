@@ -2,6 +2,7 @@ package com.example.nuerd.Game
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nuerd.ui.theme.mainBackgroundColor
+import com.example.nuerd.ui.theme.secondaryBackgroundColor
+
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -31,6 +35,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun GameScreen(onButtonClick: () -> Unit) {
+
+
     // Scoring
     var scoreNumber  by remember { mutableIntStateOf(0) }
 
@@ -92,6 +98,8 @@ fun GameScreen(onButtonClick: () -> Unit) {
     }
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .background(mainBackgroundColor)
             .padding(16.dp)
 
     ) {
@@ -99,7 +107,7 @@ fun GameScreen(onButtonClick: () -> Unit) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .height(50.dp)
-            .background(Color.Black)
+            .background(secondaryBackgroundColor)
             .padding(start = 16.dp),
            verticalAlignment = Alignment.CenterVertically
         ) {
@@ -124,7 +132,7 @@ fun GameScreen(onButtonClick: () -> Unit) {
                 )
             }
         }
-        Row(Modifier.background(Color.Black)) {
+        Row(Modifier.background(secondaryBackgroundColor)) {
             Column(modifier = Modifier.width(50.dp)) {
 
             }
