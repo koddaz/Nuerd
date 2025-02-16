@@ -1,4 +1,4 @@
-package com.example.nuerd.Tables
+package com.example.nuerd.tables
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,13 +7,11 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.nuerd.Tables.AppButtonSettings.buttonSettings
 import com.example.nuerd.ui.theme.buttonBackgroundColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
 

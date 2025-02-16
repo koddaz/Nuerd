@@ -1,4 +1,4 @@
-package com.example.nuerd.Practie
+package com.example.nuerd.practie
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button

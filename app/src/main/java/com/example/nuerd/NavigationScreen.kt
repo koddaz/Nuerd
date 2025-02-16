@@ -9,10 +9,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.nuerd.Game.GameScreen
-import com.example.nuerd.Practie.PracticeScreen
-import com.example.nuerd.Settings.SettingsScreen
-import com.example.nuerd.Tables.TablesScreen
+import com.example.nuerd.game.GameScreen
+import com.example.nuerd.practie.PracticeScreen
+import com.example.nuerd.settings.SettingsScreen
+import com.example.nuerd.tables.TablesScreen
 import com.example.nuerd.ui.theme.NuerdTheme
 
 object Routes {

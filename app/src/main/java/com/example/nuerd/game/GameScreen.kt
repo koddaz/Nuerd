@@ -1,12 +1,14 @@
-package com.example.nuerd.Game
+package com.example.nuerd.game
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,12 +20,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+
 import com.example.nuerd.ui.theme.mainBackgroundColor
 import com.example.nuerd.ui.theme.secondaryBackgroundColor
 
@@ -35,7 +38,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun GameScreen(onButtonClick: () -> Unit) {
-
+    // firstTimePlaying
+    var firstGame by remember { mutableStateOf(true) }
 
     // Scoring
     var scoreNumber  by remember { mutableIntStateOf(0) }
@@ -71,7 +75,8 @@ fun GameScreen(onButtonClick: () -> Unit) {
         if (!isPlaying) {
             isPlaying = true
             scope.launch {
-                while (timeRemaining > 0 && isPlaying) {
+
+                while (timeRemaining > 0 && isPlaying && lives > 0) {
                     delay(1.seconds)
                     timeRemaining--
                 }
@@ -80,6 +85,11 @@ fun GameScreen(onButtonClick: () -> Unit) {
                     lives--
                     timeRemaining = 10
                     countdown()
+                } else if (lives == 0) {
+                    scoreNumber = 0
+                    isPlaying = false
+                    timeRemaining = 0
+                    lives = 0
                 }
             }
         }
@@ -103,51 +113,56 @@ fun GameScreen(onButtonClick: () -> Unit) {
             .padding(16.dp)
 
     ) {
-        Text("Game")
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp)
-            .background(secondaryBackgroundColor)
-            .padding(start = 16.dp),
-           verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.
-            weight(1f)) {
-                CountingLives(lives = lives)
-            }
-            Column(modifier = Modifier.
-            weight(1f)) {
-                Text(
-                    text = "Time: $timeRemaining",
-                    fontSize = 30.sp,
-                    color = Color.White
-                )
-            }
-            Column(modifier = Modifier.
-            weight(1f)) {
-                Text(
-                    text = "Score: $scoreNumber",
-                    fontSize = 30.sp,
-                    color = Color.White
-                )
-            }
-        }
-        Row(Modifier.background(secondaryBackgroundColor)) {
-            Column(modifier = Modifier.width(50.dp)) {
+        Column(Modifier.background(secondaryBackgroundColor)) {
+            Row(Modifier
+                .fillMaxWidth()
+                .border(width = 1.dp, color = Color.Black)
+                .background(secondaryBackgroundColor)
+                .padding(16.dp)) {
+                GameInfoRow(lives = lives, timeRemaining = timeRemaining, scoreNumber = scoreNumber)
 
             }
-            GameWindow(
-                first = firstNumber,
-                second = secondNumber,
-                modifier = Modifier.weight(1f))
-            PlayButton(
-                calculate = { calculate() },
-                countdown = { countdown() },
-                randomize = { randomize() }
-            )
+            Row(Modifier.height(10.dp)) {
+                // FILLER
+            }
+            Column(Modifier.height(150.dp)) {
+
+                GameWindow(
+                    firstGame = firstGame,
+                    lives = lives,
+                    first = firstNumber,
+                    second = secondNumber,
+                    isPlaying = isPlaying,
+                    modifier = Modifier.weight(1f),
+                    onPlayClicked = {
+                        if (!isPlaying) {
+                            if (firstGame) {
+                            firstGame = false } else {
+                                scoreNumber = 0
+                                timeRemaining = 10
+                                lives = 3
+                            }
+                            calculate()
+                            countdown()
+                            randomize()
+                        }
+                    },
+
+                    )
+            }
         }
-        Row(modifier = Modifier.padding(16.dp)) {
+        Row(Modifier.height(10.dp)) {
+            // FILLER
+        }
+
+
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .border(width = 1.dp, color = Color.Black)
+            .background(secondaryBackgroundColor)
+            .padding(16.dp)) {
             ButtonGrid(
+                lives = { lives-- },
                 isPlaying = isPlaying,
                 correctButton = { correctButton() },
                 calculate = { calculate() },
