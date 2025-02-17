@@ -5,14 +5,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Scoreboard
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.nuerd.ui.theme.secondaryBackgroundColor
 
 @Composable
-fun GameInfoRow(lives: Int, timeRemaining: Int, scoreNumber: Int) {
+fun GameInfoRow(lives: Int, scoreNumber: Int, timeRemaining: Int) {
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,5 +47,35 @@ fun GameInfoRow(lives: Int, timeRemaining: Int, scoreNumber: Int) {
         ) {
             ScoreCount(scoreNumber = scoreNumber)
         }
+    }
+}
+
+@Composable
+fun RemainingTime(timeRemaining: Int) {
+    Row() {
+        Icon(
+            imageVector = Icons.Filled.Timer,
+            contentDescription = "Time Icon"
+        )
+        Text(
+            text = "$timeRemaining",
+            fontSize = 24.sp,
+
+            )
+    }
+}
+
+@Composable
+fun ScoreCount(scoreNumber: Int) {
+    Row() {
+        Icon(
+            imageVector = Icons.Filled.Scoreboard,
+            contentDescription = "Score Icon"
+
+        )
+        Text(
+            text = "$scoreNumber",
+            fontSize = 24.sp
+        )
     }
 }
