@@ -10,24 +10,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nuerd.ui.theme.actionButtonColor
 import com.example.nuerd.ui.theme.buttonBackgroundColor
 import com.example.nuerd.ui.theme.highlightColor
 
 @Composable
 fun ButtonGrid(
-    randomNumbers: List<Int>,
     lives: () -> Unit,
     correctButton: () -> Unit,
     calculate: () -> Unit,
     randomize: () -> Unit,
     countdown: () -> Unit,
     result: Int,
+    randomNumbers: List<Int>,
     isPlaying: Boolean
 ) {
 

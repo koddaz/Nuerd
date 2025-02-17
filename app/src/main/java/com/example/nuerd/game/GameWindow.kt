@@ -92,7 +92,35 @@ fun GameWindow(
     }
 }
 
+@Composable
+fun RemainingTime(timeRemaining: Int) {
+    Row() {
+        Icon(
+            imageVector = Icons.Filled.Timer,
+            contentDescription = "Time Icon"
+        )
+        Text(
+            text = "$timeRemaining",
+            fontSize = 24.sp,
 
+            )
+    }
+}
+
+@Composable
+fun ScoreCount(scoreNumber: Int) {
+    Row() {
+    Icon(
+        imageVector = Icons.Filled.Scoreboard,
+        contentDescription = "Score Icon"
+
+    )
+    Text(
+        text = "$scoreNumber",
+        fontSize = 24.sp
+    )
+}
+}
 
 
 @Composable

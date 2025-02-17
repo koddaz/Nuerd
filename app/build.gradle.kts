@@ -43,11 +43,6 @@ dependencies {
 
     implementation ("androidx.compose.material:material-icons-extended:1.6.0")
 
-    val lifecycle_version = "2.8.7"
-
-    // ViewModel
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
-
 
     // Navigation
     implementation(libs.kotlinx.serialization.json)
