@@ -18,14 +18,11 @@ import com.example.nuerd.ui.theme.highlightColor
 
 @Composable
 fun ButtonGrid(
-    lives: () -> Unit,
+    isPlaying: Boolean,
     correctButton: () -> Unit,
-    calculate: () -> Unit,
-    randomize: () -> Unit,
-    countdown: () -> Unit,
     result: Int,
     randomNumbers: List<Int>,
-    isPlaying: Boolean
+
 ) {
 
     Column {
@@ -41,15 +38,12 @@ fun ButtonGrid(
                 Button(
                     colors = ButtonDefaults.buttonColors(containerColor = buttonBackgroundColor),
                     onClick = {
-                    calculate()
-                    randomize()
-                    if (number == result) {
-                        correctButton()
-                    } else {
-                        countdown()
-                        lives()
-                    }
-                },
+                        if (isPlaying) {
+                            if (number == result) {
+                                correctButton()
+                            }
+                        }
+                    },
                     enabled = isPlaying
                 ) {
                     Text(text = "$number", color = highlightColor)

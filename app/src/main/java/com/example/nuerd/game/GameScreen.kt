@@ -13,6 +13,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -26,6 +27,9 @@ import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import com.example.nuerd.ui.theme.highlightColor
 
 import com.example.nuerd.ui.theme.mainBackgroundColor
 import com.example.nuerd.ui.theme.secondaryBackgroundColor
@@ -37,42 +41,60 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun GameScreen(onButtonClick: () -> Unit) {
+fun GameScreen(
+    gameViewModel: GameViewModel,
+    onButtonClick: () -> Unit
+) {
+
+
+
     // firstTimePlaying
-    var firstGame by remember { mutableStateOf(true) }
+    val firstGame by gameViewModel.firstGame.collectAsState()
 
     // Scoring
-    var scoreNumber  by remember { mutableIntStateOf(0) }
+    // val scoreNumber by gameViewModel.score.collectAsState()
 
     // Items for the countdown
-    var timeRemaining by remember { mutableIntStateOf(10) }
-    var isPlaying by remember { mutableStateOf(false) }
-    var lives by remember { mutableIntStateOf(3) }
-    val scope: CoroutineScope = rememberCoroutineScope()
+    // val timeRemaining by gameViewModel.timeRemaining.collectAsState()
+    val isPlaying by gameViewModel.isPlaying.collectAsState()
+    val lives by gameViewModel.lives.collectAsState()
+
+    // val scope: CoroutineScope = rememberCoroutineScope()
 
     // Numbers for the multiplication
-    var firstNumber by remember { mutableIntStateOf(0) }
-    var secondNumber by remember { mutableIntStateOf(0) }
-    var result by remember { mutableIntStateOf(0) }
+    val firstNumber by gameViewModel.firstNumber.collectAsState()
+    // by remember { mutableIntStateOf(0) }
+    val secondNumber by gameViewModel.secondNumber.collectAsState()
+    val result by gameViewModel.result.collectAsState()
 
-    // Buttons for the grid
     val buttonCount = 9
-    val randomNumbers = remember { mutableStateListOf<Int>()}
+    val randomNumbers = remember(result) {
+        mutableStateListOf<Int>().apply {
+            repeat(buttonCount - 1) {
+                add(Random.nextInt(1, 100))
+            }
+            add(result)
+            shuffle()
+        }
+    }
 
+
+    /*
     fun randomize() {
         randomNumbers.clear()
         repeat(buttonCount - 1) {
             randomNumbers.add(Random.nextInt(1, 100))
         }
-        randomNumbers.add(result)
+        randomNumbers.add(gameViewModel.result.value)
         randomNumbers.shuffle()
 
     }
 
-    LaunchedEffect(Unit) { randomize() }
+
 
     fun countdown() {
-        if (!isPlaying) {
+
+       /* if (!isPlaying) {
             isPlaying = true
             scope.launch {
 
@@ -92,20 +114,14 @@ fun GameScreen(onButtonClick: () -> Unit) {
                     lives = 0
                 }
             }
-        }
+        } */
     }
 
     fun calculate() {
-        firstNumber = Random.nextInt(1, 10)
-        secondNumber = Random.nextInt(1, 10)
-        result = firstNumber * secondNumber
+        gameViewModel.calculate()
     }
+ */
 
-    fun correctButton() {
-        scoreNumber++
-        timeRemaining = 10
-        countdown()
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -113,13 +129,14 @@ fun GameScreen(onButtonClick: () -> Unit) {
             .padding(16.dp)
 
     ) {
-        Column(Modifier.background(secondaryBackgroundColor)) {
+        Column() {
             Row(Modifier
                 .fillMaxWidth()
+                .height(100.dp)
                 .border(width = 1.dp, color = Color.Black)
                 .background(secondaryBackgroundColor)
-                .padding(16.dp)) {
-                GameInfoRow(lives = lives, timeRemaining = timeRemaining, scoreNumber = scoreNumber)
+                ) {
+               Text(text ="GAME", fontSize = 40.sp, color = highlightColor)
 
             }
             Row(Modifier.height(10.dp)) {
@@ -135,16 +152,12 @@ fun GameScreen(onButtonClick: () -> Unit) {
                     isPlaying = isPlaying,
                     modifier = Modifier.weight(1f),
                     onPlayClicked = {
-                        if (!isPlaying) {
-                            if (firstGame) {
-                            firstGame = false } else {
-                                scoreNumber = 0
-                                timeRemaining = 10
-                                lives = 3
-                            }
-                            calculate()
-                            countdown()
-                            randomize()
+                        if (firstGame) {
+                            gameViewModel.startGame()
+                        } else if (lives == 0) {
+                            gameViewModel.resetGame()
+                        } else {
+                            gameViewModel.playPause()
                         }
                     },
 
@@ -155,6 +168,18 @@ fun GameScreen(onButtonClick: () -> Unit) {
             // FILLER
         }
 
+        Row(Modifier
+            .fillMaxWidth()
+            .border(width = 1.dp, color = Color.Black)
+            .background(Color.Transparent)
+        ) {
+            GameInfoRow()
+
+        }
+
+        Row(Modifier.height(10.dp)) {
+            // FILLER
+        }
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -162,12 +187,8 @@ fun GameScreen(onButtonClick: () -> Unit) {
             .background(secondaryBackgroundColor)
             .padding(16.dp)) {
             ButtonGrid(
-                lives = { lives-- },
                 isPlaying = isPlaying,
-                correctButton = { correctButton() },
-                calculate = { calculate() },
-                countdown = { countdown() },
-                randomize = { randomize() },
+                correctButton = { gameViewModel.correctButton() },
                 randomNumbers = randomNumbers,
                 result = result,
                 )
@@ -194,5 +215,5 @@ fun GameScreen(onButtonClick: () -> Unit) {
 fun GameScreenPreview(
 
 ) {
-    GameScreen(onButtonClick = {})
+    GameScreen(onButtonClick = {}, gameViewModel = GameViewModel())
 }

@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.nuerd.game.GameScreen
+import com.example.nuerd.game.GameViewModel
 import com.example.nuerd.practie.PracticeScreen
 import com.example.nuerd.settings.SettingsScreen
 import com.example.nuerd.tables.TablesScreen
@@ -30,10 +31,10 @@ object Routes {
 fun NavigationScreen() {
     val navController = rememberNavController()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column {
         NavHost(navController = navController, startDestination = Routes.HOME) {
             composable(Routes.GAME) {
-                GameScreen(onButtonClick = { navController.popBackStack() })
+                GameScreen(onButtonClick = { navController.popBackStack() }, gameViewModel = GameViewModel())
             }
             composable(Routes.HOME) {
                 HomeScreen(
