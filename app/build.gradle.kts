@@ -46,6 +46,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
     implementation("com.google.firebase:firebase-analytics")
 
+
     // Navigation
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.navigation.compose)
