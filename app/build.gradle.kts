@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -42,7 +43,8 @@ android {
 dependencies {
 
     implementation ("androidx.compose.material:material-icons-extended:1.6.0")
-
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation("com.google.firebase:firebase-analytics")
 
     // Navigation
     implementation(libs.kotlinx.serialization.json)

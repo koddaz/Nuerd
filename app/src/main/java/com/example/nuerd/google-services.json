@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "91263520474",
+    "project_id": "nuerd-824d8",
+    "storage_bucket": "nuerd-824d8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:91263520474:android:dad2407e2395cc551f5fe3",
+        "android_client_info": {
+          "package_name": "com.example.nuerd"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKRpF_YKIOd67am9DdPOoLM9ooYECnyHM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

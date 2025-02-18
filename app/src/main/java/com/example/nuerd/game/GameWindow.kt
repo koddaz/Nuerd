@@ -15,7 +15,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,11 +26,9 @@ import androidx.compose.material.icons.filled.Scoreboard
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.nuerd.ui.theme.borderColor
 import com.example.nuerd.ui.theme.highlightColor
-import com.example.nuerd.ui.theme.mainBackgroundColor
 import com.example.nuerd.ui.theme.secondaryBackgroundColor
 
 @Composable
@@ -44,9 +41,14 @@ fun GameWindow(
     modifier: Modifier = Modifier,
     onPlayClicked: () -> Unit
 ) {
-    Column(modifier.fillMaxWidth().height(150.dp).border(
-        width = 1.dp,
-        color = borderColor).background(secondaryBackgroundColor)) {
+    Column(modifier
+        .fillMaxWidth()
+        .height(150.dp)
+        .border(
+            width = 1.dp,
+            color = borderColor
+        )
+        .background(secondaryBackgroundColor)) {
 
         Row(modifier.padding(end = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
@@ -94,7 +96,7 @@ fun GameWindow(
 
 @Composable
 fun RemainingTime(timeRemaining: Int) {
-    Row() {
+    Row {
         Icon(
             imageVector = Icons.Filled.Timer,
             contentDescription = "Time Icon"
@@ -109,7 +111,7 @@ fun RemainingTime(timeRemaining: Int) {
 
 @Composable
 fun ScoreCount(scoreNumber: Int) {
-    Row() {
+    Row {
     Icon(
         imageVector = Icons.Filled.Scoreboard,
         contentDescription = "Score Icon"
@@ -142,5 +144,6 @@ fun CustomIconButton(
 @Preview(showBackground = true)
 @Composable
 fun GameWindowPreview() {
-        GameWindow(onPlayClicked = {}, isPlaying = false, first = 0, second = 0, lives = 2, firstGame = true)
+
+    GameWindow(onPlayClicked = {}, isPlaying = false, first = 0, second = 0, lives = 2, firstGame = true)
 }
