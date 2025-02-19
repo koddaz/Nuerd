@@ -9,6 +9,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.nuerd.account.AuthViewModel
+import com.example.nuerd.account.LoginScreen
 import com.example.nuerd.game.GameScreen
 import com.example.nuerd.practie.PracticeScreen
 import com.example.nuerd.settings.SettingsScreen
@@ -21,6 +23,7 @@ object Routes {
     const val PRACTICE = "practice"
     const val SETTINGS = "settings"
     const val TABLES = "tables"
+    const val LOGIN = "login"
    //  const val ABOUT = "about"
 }
 
@@ -31,12 +34,13 @@ fun NavigationScreen() {
     val navController = rememberNavController()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        NavHost(navController = navController, startDestination = Routes.HOME) {
+        NavHost(navController = navController, startDestination = Routes.LOGIN) {
             composable(Routes.GAME) {
                 GameScreen(onButtonClick = { navController.popBackStack() })
             }
             composable(Routes.HOME) {
                 HomeScreen(
+                    onButtonClick = { navController.popBackStack() },
                     onTablesClick = { navController.navigate(Routes.TABLES) },
                     onPracticeClick = { navController.navigate(Routes.PRACTICE) },
                     onGameClick = { navController.navigate(Routes.GAME) },
@@ -52,6 +56,9 @@ fun NavigationScreen() {
             composable(Routes.TABLES) {
 
                 TablesScreen(onButtonClick = { navController.popBackStack() })
+            }
+            composable(Routes.LOGIN) {
+                LoginScreen(onSignIn = { navController.navigate(Routes.HOME)})
             }
             }
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nuerd.models.GameViewModel
+import com.example.nuerd.ui.theme.NuerdTheme
 import com.example.nuerd.ui.theme.mainBackgroundColor
 import com.example.nuerd.ui.theme.secondaryBackgroundColor
 
@@ -142,5 +143,7 @@ fun GameScreen(gameViewModel: GameViewModel = viewModel(), onButtonClick: () -> 
 fun GameScreenPreview(
 
 ) {
-    GameScreen(onButtonClick = {})
+    NuerdTheme {
+        GameScreen(onButtonClick = {})
+    }
 }

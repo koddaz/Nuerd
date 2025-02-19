@@ -59,6 +59,7 @@ class GameViewModel: ViewModel() {
         _scoreNumber.value++
         _timeRemaining.value = 10
         countdown()
+
     }
 
     fun looseLife() {
@@ -78,26 +79,21 @@ class GameViewModel: ViewModel() {
         if (!_isPlaying.value) {
             _isPlaying.value = true
             viewModelScope.launch {
-                while (timeRemaining.value > 0 && isPlaying.value && lives.value > 0) {
+                while (timeRemaining.value > 0 && lives.value > 0) {
                     delay(1000L)
-                    _timeRemaining.value--
+                    if (_timeRemaining.value > 0) {
+                        _timeRemaining.value-- // Decrement time
+                    }
                 }
-                _isPlaying.value = false
-                if (timeRemaining.value == 0 && lives.value > 0) {
+                if (_timeRemaining.value == 0 && _lives.value > 0) {
                     _lives.value--
                     _timeRemaining.value = 10
-                    countdown()
-                } else if (lives.value == 0) {
-                    _scoreNumber.value = 0
-                    _isPlaying.value = false
-                    _timeRemaining.value = 0
-                    _lives.value = 0
+                    countdown() // Continue countdown unless lives are gone
+                } else if (_lives.value == 0) {
+                    resetGame()
                 }
             }
-        } else {
-            _isPlaying.value = false
         }
-
     }
 
 }

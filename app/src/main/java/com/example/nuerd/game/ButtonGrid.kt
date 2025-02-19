@@ -44,6 +44,7 @@ fun ButtonGrid(
                     randomize()
                     if (number == result) {
                         correctButton()
+
                     } else {
                         countdown()
                         lives()
