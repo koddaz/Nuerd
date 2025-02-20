@@ -7,6 +7,7 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.nuerd.ui.theme.highlightColor
 
 @Composable
 fun CountingLives(lives: Int) {
@@ -16,7 +17,7 @@ fun CountingLives(lives: Int) {
                 Icon(
                     imageVector = Icons.Filled.Favorite,
                     contentDescription = null,
-                    tint = Color.Red
+                    tint = highlightColor
                 )
             }
 
@@ -24,7 +25,7 @@ fun CountingLives(lives: Int) {
             Icon(
                 imageVector = Icons.Outlined.FavoriteBorder,
                 contentDescription = "Empty Heart",
-                tint = Color.Red
+                tint = highlightColor
             )
         }
 

@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Scoreboard
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.nuerd.ui.theme.borderColor
@@ -48,7 +49,7 @@ fun GameWindow(
             width = 1.dp,
             color = borderColor
         )
-        .background(secondaryBackgroundColor)) {
+        .background(Color.Transparent)) {
 
         Row(modifier.padding(end = 10.dp),
             verticalAlignment = Alignment.CenterVertically) {
@@ -99,11 +100,14 @@ fun RemainingTime(timeRemaining: Int) {
     Row {
         Icon(
             imageVector = Icons.Filled.Timer,
-            contentDescription = "Time Icon"
+            contentDescription = "Time Icon",
+            tint = highlightColor
+
         )
         Text(
             text = "$timeRemaining",
             fontSize = 24.sp,
+            color = highlightColor
 
             )
     }
@@ -114,12 +118,13 @@ fun ScoreCount(scoreNumber: Int) {
     Row {
     Icon(
         imageVector = Icons.Filled.Scoreboard,
-        contentDescription = "Score Icon"
-
+        contentDescription = "Score Icon",
+        tint = highlightColor
     )
     Text(
         text = "$scoreNumber",
-        fontSize = 24.sp
+        fontSize = 24.sp,
+        color = highlightColor
     )
 }
 }

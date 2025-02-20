@@ -32,6 +32,11 @@ class GameViewModel: ViewModel() {
 
     val randomNumbers: StateFlow<List<Int>> = _randomNumbers.asStateFlow()
 
+    init {
+        calculate()
+        randomize()
+    }
+
     fun randomize() {
         val newRandomNumbers = mutableListOf<Int>()
 
