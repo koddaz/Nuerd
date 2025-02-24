@@ -9,7 +9,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.nuerd.account.AuthViewModel
 import com.example.nuerd.account.LoginScreen
 import com.example.nuerd.game.GameScreen
 import com.example.nuerd.practie.PracticeScreen

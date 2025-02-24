@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.nuerd.ui.theme.borderColor
 import com.example.nuerd.ui.theme.highlightColor
-import com.example.nuerd.ui.theme.secondaryBackgroundColor
 
 @Composable
 fun GameWindow(
@@ -61,15 +60,16 @@ fun GameWindow(
 
             ) {
 
-                if (!isPlaying && firstGame) {
+                if (firstGame) {
                     CustomIconButton(
                         onPlayClicked = { onPlayClicked() },
                         imageVector = Icons.Filled.PlayArrow,
                         contentDescription = "Play Icon"
                     ) }
-                else if (!firstGame && lives == 0) {
+                else if (lives == 0) {
                     Text(
                         text = "Game Over",
+                        color = highlightColor,
                         fontSize = 60.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -80,11 +80,12 @@ fun GameWindow(
                     )
                     Text("Play Again")
                 }
-                    else {
+                    else if (isPlaying) {
                         Text(
                             text = "$first * $second",
                             fontSize = 60.sp,
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = highlightColor
                         )
                     }
 

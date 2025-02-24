@@ -44,7 +44,7 @@ fun ScrollingColumn(modifier: Modifier = Modifier) {
             }
             HorizontalPager(state = pagerState) { page ->
 
-                Column() {
+                Column {
 
                     Tables(table = page + 1)
 

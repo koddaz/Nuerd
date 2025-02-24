@@ -1,7 +1,8 @@
 package com.example.nuerd
 
-import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
+import androidx.compose.material.icons.filled.PersonRemove
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.TableChart
 import androidx.compose.material3.Button
@@ -22,18 +24,18 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nuerd.account.AuthState
-import com.example.nuerd.account.AuthViewModel
-import com.example.nuerd.ui.theme.buttonBackgroundColor
+
+import com.example.nuerd.models.AuthState
+import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.ui.theme.highlightColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
-import com.example.nuerd.ui.theme.secondaryBackgroundColor
+
 
 
 @Composable
@@ -44,15 +46,14 @@ fun HomeScreen(
     onPracticeClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onTablesClick: () -> Unit,
-    authViewModel: AuthViewModel = viewModel()
+    authViewModel: AuthViewModel? = viewModel()
 
     ) {
 
-    val authState = authViewModel.authState.observeAsState()
-    val context = LocalContext.current
+    val authState = authViewModel?.authState?.observeAsState()
 
-    LaunchedEffect(authState.value) {
-        when (authState.value) {
+    LaunchedEffect(authState?.value) {
+        when (authState?.value) {
             is AuthState.Unauthenticated -> onButtonClick()
             else -> Unit
         }
@@ -60,36 +61,43 @@ fun HomeScreen(
 
     Column(modifier.fillMaxSize().background(mainBackgroundColor),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Column(modifier.width(300.dp).padding(bottom = 10.dp).background(secondaryBackgroundColor)) {
-            Text(
-                text ="Nuerd",
-                fontSize = 50.sp,
-                color = highlightColor
-            )
 
-            Button(onClick = {authViewModel.signOut()} ) {
-                Text("Sign out")
+        Column(modifier
+            .width(400.dp)
+            .background(Color.Transparent)
+            .border(width = 3.dp, color = highlightColor)
+            .padding(16.dp)
+        ) {
+            Row(modifier
+                .padding(16.dp)
+            ) {
+                Text(
+                    text ="Nuerd",
+                    fontSize = 50.sp,
+                    color = highlightColor
+                )
+
+                MenuButton(onClick = { authViewModel?.signOut() }, imageVector = Icons.Filled.PersonRemove, contentDescription = "Sign out")
             }
 
+            Column(modifier
+                .background(Color.Transparent)
+                .padding(20.dp)
+            ) {
 
+
+                // Settings
+                MenuButton(onClick = onSettingsClick, imageVector = Icons.Filled.Settings, contentDescription = "Settings")
+                // Practice
+                MenuButton(onClick = onPracticeClick, imageVector = Icons.Filled.Calculate, contentDescription = "Practice")
+                // Tables
+                MenuButton(onClick = onTablesClick, imageVector = Icons.Filled.TableChart, contentDescription = "Tables")
+                // Play
+                MenuButton(onClick = onGameClick, imageVector = Icons.Filled.Settings, contentDescription = "Play")
+
+            }
         }
-        Column(modifier
-            .width(300.dp)
-            .background(secondaryBackgroundColor)
-            .padding(20.dp)
-        ) {
 
-
-            // Settings
-            MenuButton(onClick = onSettingsClick, imageVector = Icons.Filled.Settings, contentDescription = "Settings")
-            // Practice
-            MenuButton(onClick = onPracticeClick, imageVector = Icons.Filled.Calculate, contentDescription = "Practice")
-            // Tables
-            MenuButton(onClick = onTablesClick, imageVector = Icons.Filled.TableChart, contentDescription = "Tables")
-            // Play
-            MenuButton(onClick = onGameClick, imageVector = Icons.Filled.Settings, contentDescription = "Play")
-
-        }
     }
 }
 
@@ -98,13 +106,16 @@ fun HomeScreen(
 fun MenuButton(onClick: () -> Unit, imageVector: ImageVector, contentDescription: String) {
 
     Button(
-        colors = ButtonDefaults.buttonColors(containerColor = buttonBackgroundColor),
+        border = BorderStroke(width = 4.dp, color = highlightColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent
+        ),
         modifier = Modifier.fillMaxWidth(),
         onClick = {
             onClick()
         }) {
 
-        Row(Modifier.weight(2f)) {
+        Row(Modifier.weight(1f)) {
             Icon(
                 imageVector = imageVector,
                 contentDescription = contentDescription,
@@ -121,8 +132,15 @@ fun MenuButton(onClick: () -> Unit, imageVector: ImageVector, contentDescription
 
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(onGameClick = {}, onPracticeClick = {}, onSettingsClick = {}, onTablesClick = {}, onButtonClick = {})
+    HomeScreen(
+        onGameClick = {},
+        onPracticeClick = {},
+        onSettingsClick = {},
+        onTablesClick = {},
+        onButtonClick = {},
+        authViewModel = null // Pass null in Preview
+    )
 }

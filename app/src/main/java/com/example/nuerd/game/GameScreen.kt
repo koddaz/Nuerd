@@ -1,6 +1,7 @@
 package com.example.nuerd.game
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,7 +38,7 @@ fun GameScreen(
     onButtonClick: () -> Unit
     ) {
     // firstTimePlaying
-    var firstGame by remember { mutableStateOf(true) }
+    val firstGame by gameViewModel.firstGame.collectAsState()
     val firstNumber by gameViewModel.firstNumber.collectAsState()
     val secondNumber by gameViewModel.secondNumber.collectAsState()
     val result by gameViewModel.result.collectAsState()
@@ -49,19 +50,15 @@ fun GameScreen(
 
     LaunchedEffect(Unit) {
         gameViewModel.calculate()
-        gameViewModel.randomize()
     }
-
-
-
-
 
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(mainBackgroundColor)
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
 
     ) {
         Column(modifier.fillMaxWidth().border(width = 4.dp, color = highlightColor).background(Color.Transparent).padding(20.dp)) {
@@ -80,15 +77,15 @@ fun GameScreen(
                     isPlaying = isPlaying,
                     modifier = Modifier.weight(1f),
                     onPlayClicked = {
-                        if (!isPlaying) {
-                            if (firstGame) {
-                                firstGame = false } else {
-                                gameViewModel.resetGame()
+                        if (firstGame) {
+                            gameViewModel.startGame() }
+                        else {
+                            gameViewModel.resetGame()
                             }
+
                             gameViewModel.calculate()
                             gameViewModel.countdown()
-                            gameViewModel.randomize()
-                        }
+
                     },
 
                     )
@@ -101,18 +98,12 @@ fun GameScreen(
                         .size(300.dp) // ✅ Explicitly constrain the bouncing area
                         .background(Color.Transparent)
                 ) {
-                    GameButtons()
-                    if (randomNumbers.isNotEmpty() && isPlaying) {
 
-                        ButtonGrid(
-                            lives = { gameViewModel.looseLife() },
-                            correctButton = { gameViewModel.correctButton() },
-                            calculate = { gameViewModel.calculate() },
-                            countdown = { gameViewModel.countdown() },
-                            randomize = { gameViewModel.randomize() },
+                    if (randomNumbers.isNotEmpty() && isPlaying) {
+                        GameButtons(
+                            gameViewModel = gameViewModel,
                             randomNumbers = randomNumbers,
                             result = result,
-                            isPlaying = isPlaying
                         )
                     }
                 }
@@ -146,6 +137,6 @@ fun GameScreenPreview(
 
 ) {
     NuerdTheme {
-        GameScreen(onButtonClick = {})
+        GameScreen(onButtonClick = {}, gameViewModel = viewModel())
     }
 }
