@@ -3,6 +3,7 @@ package com.example.nuerd.game
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,9 +26,14 @@ import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Scoreboard
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.nuerd.models.CustomFont
+import com.example.nuerd.ui.theme.NuerdTheme
 import com.example.nuerd.ui.theme.borderColor
 import com.example.nuerd.ui.theme.highlightColor
 
@@ -69,24 +75,60 @@ fun GameWindow(
                 else if (lives == 0) {
                     Text(
                         text = "Game Over",
-                        color = highlightColor,
-                        fontSize = 60.sp,
-                        fontWeight = FontWeight.Bold
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = highlightColor
+
                     )
                     CustomIconButton (
                         onPlayClicked = { onPlayClicked() },
                         imageVector = Icons.Filled.Replay,
-                        contentDescription = "Replay Icon"
+                        contentDescription = "Replay Icon",
+
                     )
-                    Text("Play Again")
                 }
                     else if (isPlaying) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp), // Add some padding around the row
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        // First Number
                         Text(
-                            text = "$first * $second",
-                            fontSize = 60.sp,
-                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.weight(1f),
+                            text = "$first",
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
                             color = highlightColor
                         )
+
+                        // Multiplication Sign
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(bottom = 8.dp), // Adjust this value to move the * up/down
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = " * ",
+                                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 40.sp),
+                                textAlign = TextAlign.Center,
+                                color = highlightColor
+                            )
+                        }
+
+                        // Second Number
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = "$second",
+                            style = MaterialTheme.typography.headlineLarge,
+                            textAlign = TextAlign.Center,
+                            color = highlightColor
+                        )
+                    }
+
+
                     }
 
             }
@@ -102,13 +144,14 @@ fun RemainingTime(timeRemaining: Int) {
         Icon(
             imageVector = Icons.Filled.Timer,
             contentDescription = "Time Icon",
-            tint = highlightColor
+            tint = highlightColor,
 
         )
         Text(
             text = "$timeRemaining",
             fontSize = 24.sp,
-            color = highlightColor
+            color = highlightColor,
+            style = MaterialTheme.typography.headlineMedium
 
             )
     }
@@ -125,7 +168,8 @@ fun ScoreCount(scoreNumber: Int) {
     Text(
         text = "$scoreNumber",
         fontSize = 24.sp,
-        color = highlightColor
+        color = highlightColor,
+        style = MaterialTheme.typography.headlineMedium
     )
 }
 }
@@ -141,7 +185,7 @@ fun CustomIconButton(
         Icon(
             imageVector = imageVector,
             contentDescription = contentDescription,
-            modifier = Modifier.size(60.dp),
+            modifier = Modifier.size(90.dp),
             tint = highlightColor
         )
     }
@@ -150,6 +194,6 @@ fun CustomIconButton(
 @Preview(showBackground = true)
 @Composable
 fun GameWindowPreview() {
-
-    GameWindow(onPlayClicked = {}, isPlaying = false, first = 0, second = 0, lives = 2, firstGame = true)
-}
+    NuerdTheme{
+    GameWindow(onPlayClicked = {}, isPlaying = true, first = 0, second = 1, lives = 2, firstGame = false)
+}}

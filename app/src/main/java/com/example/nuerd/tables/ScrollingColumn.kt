@@ -2,6 +2,7 @@ package com.example.nuerd.tables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,23 +35,29 @@ fun ScrollingColumn(modifier: Modifier = Modifier) {
     val tablePage = pagerState.currentPage + 1
 
     Column(modifier.fillMaxSize().background(mainBackgroundColor),
-        horizontalAlignment = Alignment.CenterHorizontally) {
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center) {
 
-        Column(modifier.border(1.dp, Color.Black).width(300.dp)) {
-            Row(modifier.background(secondaryBackgroundColor).fillMaxWidth().padding(10.dp)) {
+        Column(modifier.width(300.dp)) {
+            Row(modifier.background(Color.Transparent).fillMaxWidth().padding(10.dp)) {
 
-                Text(text = "Table $tablePage",
-                    fontSize = 40.sp,
-                    color = Color.White)
-            }
-            HorizontalPager(state = pagerState) { page ->
 
-                Column {
+                    HorizontalPager(state = pagerState) { page ->
+                        Column() {
+                        Text(
+                            text = "Table $tablePage",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Column {
 
-                    Tables(table = page + 1)
+                            Tables(table = page + 1)
 
+                        }
+                    }
                 }
+
             }
+
         }
         Row(modifier.width(300.dp)) {
             Button(

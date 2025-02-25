@@ -1,5 +1,6 @@
 package com.example.nuerd.tables
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,11 +27,12 @@ object AppButtonSettings {
 }
 
 @Composable
-fun TablesScreen(onButtonClick: () -> Unit, modifier: Modifier = Modifier) {
+fun TablesScreen(onButtonClick: () -> Unit, modifier: Modifier = Modifier, ) {
     Column(modifier
         .fillMaxSize()
-        .background(mainBackgroundColor)) {
-        Text("Tables Screen")
+        .background(mainBackgroundColor),
+        verticalArrangement = Arrangement.Center) {
+
 
         ScrollingColumn()
 
@@ -52,7 +54,7 @@ fun TablesScreen(onButtonClick: () -> Unit, modifier: Modifier = Modifier) {
 
 
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun TablesScreenPreview() {
     TablesScreen(onButtonClick = {})

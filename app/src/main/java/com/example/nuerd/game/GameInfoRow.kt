@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun GameInfoRow(lives: Int, timeRemaining: Int, scoreNumber: Int) {
     Row(
+
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Transparent)

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,16 +26,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nuerd.models.GameButtonsViewModel
 import com.example.nuerd.models.GameViewModel
+import com.example.nuerd.ui.theme.NuerdTheme
 import com.example.nuerd.ui.theme.highlightColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.format.TextStyle
 
 
 @Composable
@@ -102,7 +106,8 @@ fun BouncingButton(
 
         contentAlignment = Alignment.Center
     ) {
-        Text("$number", color = currentColor)
+        Text("$number", color = currentColor,
+            style = MaterialTheme.typography.bodyLarge)
     }
 }
 
@@ -144,5 +149,7 @@ fun GameButtons(
 @Preview(showBackground = true)
 @Composable
 fun GameButtonsPreview() {
-    GameButtons(result = 0, randomNumbers = listOf( 1,2,3), gameViewModel = viewModel())
+    NuerdTheme  {
+        GameButtons(result = 0, randomNumbers = listOf(1, 2, 3), gameViewModel = viewModel())
+    }
 }
