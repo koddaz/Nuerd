@@ -26,11 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.models.GameButtonsViewModel
 import com.example.nuerd.models.GameViewModel
 import com.example.nuerd.ui.theme.NuerdTheme
@@ -38,7 +38,6 @@ import com.example.nuerd.ui.theme.highlightColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.time.format.TextStyle
 
 
 @Composable

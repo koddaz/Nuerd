@@ -12,6 +12,8 @@ import kotlin.random.Random
 
 class GameViewModel: ViewModel() {
 
+    // val authViewModel = AuthViewModel()
+
     // Random numbers for the game and the result
     private val _firstNumber = MutableStateFlow(0)
     private val _secondNumber = MutableStateFlow(0)
@@ -157,6 +159,7 @@ class GameViewModel: ViewModel() {
                 _timeRemaining.value = 10  // Reset timer
                 countdown()  // Start new countdown
             } else if (_lives.value == 0) {
+                // authViewModel.highScore(_scoreNumber.value)
                 _isPlaying.value = false
             }
         }

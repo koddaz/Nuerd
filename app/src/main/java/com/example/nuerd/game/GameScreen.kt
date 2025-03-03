@@ -9,7 +9,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,15 +22,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nuerd.MenuButton
+import com.example.nuerd.R
 import com.example.nuerd.models.GameViewModel
 import com.example.nuerd.ui.theme.NuerdTheme
 import com.example.nuerd.ui.theme.highlightColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
-
+import kotlinx.coroutines.flow.MutableStateFlow
 
 
 @Composable
@@ -59,13 +68,19 @@ fun GameScreen(
         verticalArrangement = Arrangement.Center
 
     ) {
-        Column(modifier.fillMaxWidth().border(width = 4.dp, color = highlightColor).background(Color.Transparent).padding(20.dp)) {
+        Column(modifier
+            .fillMaxWidth()
+            .paint(
+                painter = painterResource(id = R.drawable.background),
+                contentScale = ContentScale.FillBounds // Prevents blurring
+            )
+            .padding(20.dp)) {
 
             GameInfoRow(lives = lives, timeRemaining = timeRemaining, scoreNumber = scoreNumber)
             Column(modifier
                 .fillMaxWidth()
                 .height(150.dp)
-                .border(width = 2.dp, color = highlightColor)
+                // .border(width = 2.dp, color = highlightColor)
             ) {
                 GameWindow(
                     firstGame = firstGame,
@@ -88,7 +103,8 @@ fun GameScreen(
 
                     )
             }
-            Column(modifier.fillMaxWidth().border(width = 3.dp, color = highlightColor),
+            Column(modifier.fillMaxWidth(),
+                //.border(width = 3.dp,color = highlightColor),
 
                 horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
@@ -107,9 +123,15 @@ fun GameScreen(
                 }
 
             }
-            Button(onClick = onButtonClick) {
-                Text("Home")
-            }
+
+        }
+        IconButton(
+            onClick = onButtonClick,
+        ) {
+            Icon(imageVector = Icons.Filled.Home,
+                contentDescription = "Home",
+                tint = highlightColor)
+
         }
 
 
@@ -129,12 +151,65 @@ fun GameScreen(
 
 
 
-@Preview(showBackground = true, showSystemUi = true)
+@Preview(showBackground = true)
 @Composable
-fun GameScreenPreview(
-
-) {
+fun GameScreenPreview() {
     NuerdTheme {
-        GameScreen(onButtonClick = {}, gameViewModel = viewModel())
+        GameScreen(
+
+            gameViewModel = viewModel(),
+            onButtonClick = { }
+        )
+    }
+}
+
+@Composable
+private fun GameScreenPreviewVersion(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(mainBackgroundColor)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Column(modifier
+            .fillMaxWidth()
+            .paint(
+                painter = painterResource(id = R.drawable.background),
+                contentScale = ContentScale.FillBounds
+            )
+            .padding(20.dp)) {
+
+            GameInfoRow(lives = 3, timeRemaining = 60, scoreNumber = 0)
+            Column(modifier
+                .fillMaxWidth()
+                .height(150.dp)
+            ) {
+                GameWindow(
+                    firstGame = true,
+                    lives = 3,
+                    first = 1,
+                    second = 2,
+                    isPlaying = true,
+                    modifier = Modifier.weight(1f),
+                    onPlayClicked = {}
+                )
+            }
+
+            Column(modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Box(
+                    modifier = Modifier
+                        .size(300.dp)
+                        .background(Color.Transparent)
+                )
+            }
+
+            Button(onClick = {}) {
+                Text("Home")
+            }
+        }
     }
 }

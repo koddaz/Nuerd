@@ -45,20 +45,16 @@ dependencies {
 
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.8")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.8")
-    implementation ("androidx.compose.material:material-icons-extended:1.7.8")
-
-    implementation("com.google.firebase:firebase-analytics")
-
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
 
-    // Add the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-auth")
-
-    // Also add the dependency for the Google Play services library and specify its version
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
+    implementation("com.google.firebase:firebase-analytics")
 
     // Navigation
     implementation(libs.kotlinx.serialization.json)
@@ -78,9 +74,10 @@ dependencies {
     implementation(libs.androidx.runtime)
     implementation(libs.androidx.compose.testing)
     implementation(libs.firebase.crashlytics.buildtools)
+    implementation(libs.androidx.benchmark.common)
     testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.0")
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)

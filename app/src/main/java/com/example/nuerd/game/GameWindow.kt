@@ -29,10 +29,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.nuerd.models.CustomFont
 import com.example.nuerd.ui.theme.NuerdTheme
 import com.example.nuerd.ui.theme.borderColor
 import com.example.nuerd.ui.theme.highlightColor
