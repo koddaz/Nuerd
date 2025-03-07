@@ -1,9 +1,12 @@
 package com.example.nuerd.models
 
 import android.util.Log
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.intl.Locale
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -12,6 +15,12 @@ import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.GET
+import retrofit2.http.Query
 
 @IgnoreExtraProperties
 data class User(
@@ -20,6 +29,59 @@ data class User(
     val password: String? = null,
     val country: String? = null,
 )
+
+data class Country(
+    val name: Name,
+    val cca2: String,
+    val flags: Flags
+)
+
+data class Name(
+    val common: String
+)
+
+data class Flags(
+    val png: String
+)
+
+interface CountryRepository {
+    @GET("v3.1/all")
+    suspend fun getCountries(
+        @Query("region") region: String? = null,
+        @Query("q") query: String? = null
+    ): List<Country>
+}
+
+class getCountriesViewModel : ViewModel() {
+    private val retrofit = Retrofit.Builder()
+        .baseUrl("https://restcountries.com/") // Ensure the baseUrl ends with a '/'
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val countryApiService = retrofit.create(CountryRepository::class.java)
+
+    private val _countries = MutableLiveData<List<Country>>()
+    val countries: LiveData<List<Country>> = _countries
+
+
+    init {
+        loadCountries()
+    }
+
+    fun loadCountries(region: String? = null, query: String? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+
+                val countriesList = countryApiService.getCountries(region, query)
+                val flags = countriesList.map { it.flags.png }
+                val sortedCountriesList = countriesList.sortedBy { it.name.common }
+                _countries.postValue(sortedCountriesList)
+                Log.d("Countries", "Countries loaded: $countriesList")
+            } catch (e: Exception) {
+                Log.e("getCountriesViewModel", "Error loading countries", e)
+            }
+        }
+    }
+}
 
 
 class AuthViewModel(): ViewModel() {

@@ -66,13 +66,13 @@ fun AccountScreen(modifier: Modifier = Modifier,
                 tint = highlightColor)
 
         }
-        UserSettings(user = userState.value, authViewModel = AuthViewModel())
+        UserSettings(user = userState.value, authViewModel = AuthViewModel(), onButtonClick = onButtonClick)
 
     }
 }
 
 @Composable
-fun UserSettings(modifier: Modifier = Modifier, user: User?, authViewModel: AuthViewModel?) {
+fun UserSettings(modifier: Modifier = Modifier, user: User?, authViewModel: AuthViewModel?, onButtonClick: () -> Unit) {
     var isCancelVisible by remember { mutableStateOf(false) }
     var isEditVisible by remember { mutableStateOf(false) }
     Column(modifier.fillMaxSize().padding(16.dp).background(Color.Transparent)) {
@@ -116,6 +116,7 @@ fun UserSettings(modifier: Modifier = Modifier, user: User?, authViewModel: Auth
             isCancelVisible = true }, title = "Delete account")
         EditButton(modifier = Modifier, onClick = {
             isEditVisible = true }, title = "Edit account")
+        EditButton(modifier = Modifier, onClick = { authViewModel?.signOut() }, title = "Sign out")
 
     }
 }
@@ -226,7 +227,7 @@ fun EditButton(modifier: Modifier, onClick: () -> Unit, title: String) {
 @Composable
 fun AccountScreenContent(user: User?) {
     Column(modifier = Modifier.fillMaxSize()) {
-        UserSettings(user = user, authViewModel = null)
+        UserSettings(user = user, authViewModel = null, onButtonClick = {})
     }
 }
 

@@ -21,3 +21,7 @@ val highlightColor = Color(0xFF00FF00)    // Bright green for highlights, import
 val actionButtonColor = Color(0xFF00CC00)
 val borderColor = Color(0xFF008000)
 
+val textMainBackgroundColor = Color(0xFF001400)  // Dark green-black background for a classic retro feel
+val textColor = Color(0xFFFFFFFF)  // White for text
+val cursorColor = Color(0xFF00FF00)  // Bright green for cursor
+val errorColor = Color(0xFFFF0000)

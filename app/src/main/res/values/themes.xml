@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    // Splash screen
+    <style name="Theme.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/nlogo</item>
+        <item name="postSplashScreenTheme">@style/Theme.Nuerd</item>
+    </style>
 
     <style name="Theme.Nuerd" parent="android:Theme.Material.Light.NoActionBar" />
 </resources>

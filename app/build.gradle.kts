@@ -42,11 +42,17 @@ android {
 }
 
 dependencies {
+ // API
+    implementation("io.coil-kt:coil-compose:2.1.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.12.40")
+    implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("androidx.compose.ui:ui-text-google-fonts:1.7.8")
     implementation("androidx.compose.ui:ui-tooling-preview:1.7.8")
     implementation("androidx.compose.material:material-icons-extended:1.7.8")
-
+    implementation("androidx.core:core-splashscreen:1.0.0")
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
 
