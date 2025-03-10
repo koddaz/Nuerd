@@ -19,12 +19,12 @@ fun ConfirmWindow(modifier: Modifier, text: String, authViewModel: AuthViewModel
         modifier.fillMaxWidth().border(width = 2.dp, color = highlightColor).padding(16.dp)
     ) {
         Text(text)
-        EditButton(modifier = Modifier, onClick = {
+        EditButton(onClick = {
             authViewModel?.deleteAccount()
             authViewModel?.signOut()
 
         }, title = "Yes")
-        EditButton(modifier = Modifier, onClick = {
+        EditButton(onClick = {
             onDismiss()
         }, title = "No")
     }

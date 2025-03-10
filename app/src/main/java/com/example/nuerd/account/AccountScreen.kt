@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,55 +27,55 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.models.User
 import com.example.nuerd.ui.theme.NuerdTheme
 import com.example.nuerd.ui.theme.highlightColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
-import com.google.firebase.auth.FirebaseAuth
-import kotlin.math.max
+
+
 
 
 @Composable
-fun AccountScreen(modifier: Modifier = Modifier,
-                  authViewModel: AuthViewModel? = viewModel(),
-                  onButtonClick: () -> Unit
-                  ) {
-
-    val userState = remember { mutableStateOf<User?>(null) }
-
-
-        LaunchedEffect(Unit) {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid != null) {
-                authViewModel?.databaseGet(uid) { user ->
-                    userState.value = user
-                }
-            }
-        }
-
-    Column(modifier.fillMaxSize().background(mainBackgroundColor),
-        verticalArrangement = Arrangement.Center) {
+fun AccountScreen(
+    modifier: Modifier = Modifier,
+    onButtonClick: () -> Unit,
+    userState: User? = null,
+    authViewModel: AuthViewModel?
+) {
+    Column(
+        modifier.fillMaxSize().background(mainBackgroundColor),
+        verticalArrangement = Arrangement.Center
+    ) {
         IconButton(
             onClick = onButtonClick,
         ) {
-            Icon(imageVector = Icons.Filled.Home,
+            Icon(
+                imageVector = Icons.Filled.Home,
                 contentDescription = "Home",
-                tint = highlightColor)
-
+                tint = highlightColor
+            )
         }
-        UserSettings(user = userState.value, authViewModel = AuthViewModel(), onButtonClick = onButtonClick)
-
+        UserSettings(
+            user = userState,
+            authViewModel = authViewModel,
+            onButtonClick = onButtonClick
+        )
     }
 }
 
 @Composable
-fun UserSettings(modifier: Modifier = Modifier, user: User?, authViewModel: AuthViewModel?, onButtonClick: () -> Unit) {
+fun UserSettings(
+    modifier: Modifier = Modifier,
+    user: User?,
+    authViewModel: AuthViewModel?,
+    onButtonClick: () -> Unit
+) {
     var isCancelVisible by remember { mutableStateOf(false) }
     var isEditVisible by remember { mutableStateOf(false) }
-    Column(modifier.fillMaxSize().padding(16.dp).background(Color.Transparent)) {
-
+    Column(
+        modifier.fillMaxSize().padding(16.dp).background(Color.Transparent)
+    ) {
         if (!isCancelVisible && !isEditVisible) {
             Column(
                 modifier.fillMaxWidth().border(width = 2.dp, color = highlightColor).padding(16.dp)
@@ -95,7 +94,6 @@ fun UserSettings(modifier: Modifier = Modifier, user: User?, authViewModel: Auth
                 } else {
                     Text("No user data found.")
                 }
-
             }
         }
         if (isCancelVisible) {
@@ -103,21 +101,23 @@ fun UserSettings(modifier: Modifier = Modifier, user: User?, authViewModel: Auth
                 authViewModel = authViewModel,
                 modifier = Modifier,
                 text = "Are you sure you want to delete your account?",
-                onDismiss = { isCancelVisible = false })
+                onDismiss = { isCancelVisible = false }
+            )
         } else if (isEditVisible) {
-        EditAccount(
-            authViewModel = authViewModel, user = user, onDismiss = { isEditVisible = false },
-            username = user?.username ?: "",
-            email = user?.email ?: "",
-
-        )
-            }
-        EditButton(modifier = Modifier, onClick = {
-            isCancelVisible = true }, title = "Delete account")
-        EditButton(modifier = Modifier, onClick = {
-            isEditVisible = true }, title = "Edit account")
-        EditButton(modifier = Modifier, onClick = { authViewModel?.signOut() }, title = "Sign out")
-
+            EditAccount(
+                authViewModel = authViewModel,
+                user = user,
+                onDismiss = { isEditVisible = false },
+                username = user?.username ?: "",
+                email = user?.email ?: ""
+            )
+        }
+        EditButton(onClick = { isCancelVisible = true }, title = "Delete account")
+        EditButton(onClick = { isEditVisible = true }, title = "Edit account")
+        EditButton(onClick = {
+            authViewModel?.signOut()
+            onButtonClick()
+        }, title = "Sign out")
     }
 }
 
@@ -195,7 +195,7 @@ fun EditAccount(
         }
 
         Row {
-            EditButton(modifier = Modifier, onClick = {
+            EditButton(onClick = {
 
                     if (newPassword == confirmPassword) {
                         authViewModel?.updatePassword(oldPassword, newPassword) { success, error ->
@@ -210,14 +210,14 @@ fun EditAccount(
                     }
 
             }, title = "Save")
-            EditButton(modifier = Modifier, onClick = { onDismiss() }, title = "Cancel")
+            EditButton(onClick = { onDismiss() }, title = "Cancel")
 
         }
     }
 }
 
 @Composable
-fun EditButton(modifier: Modifier, onClick: () -> Unit, title: String) {
+fun EditButton(onClick: () -> Unit, title: String) {
     Button(onClick = onClick) {
         Text(title)
     }

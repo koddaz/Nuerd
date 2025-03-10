@@ -1,21 +1,20 @@
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -29,149 +28,195 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.nuerd.HomeScreen
+import com.example.nuerd.startscreen.HomeScreen
 import com.example.nuerd.account.AccountScreen
-import com.example.nuerd.account.LoginScreen
+import com.example.nuerd.account.LogIn
+import com.example.nuerd.account.SignUp
 import com.example.nuerd.game.GameScreen
+import com.example.nuerd.menu.Menu
 import com.example.nuerd.models.AuthState
 import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.models.GameViewModel
 import com.example.nuerd.models.Routes
+import com.example.nuerd.models.User
+import com.example.nuerd.models.getCountriesViewModel
 import com.example.nuerd.practie.PracticeScreen
 import com.example.nuerd.settings.SettingsScreen
 import com.example.nuerd.ui.theme.highlightColor
 import com.example.nuerd.ui.theme.mainBackgroundColor
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
+// Skapa en class för alla routes och en för navbaritem.
+
+@SuppressLint("UnrememberedMutableState")
 @Composable
-fun TabNav(gameViewModel: GameViewModel = viewModel(), authViewModel: AuthViewModel? = viewModel()) {
+fun TabNav(
+    gameViewModel: GameViewModel = viewModel(),
+    authViewModel: AuthViewModel? = viewModel(),
+    getCountries: getCountriesViewModel = viewModel()
+) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val authState = authViewModel?.authState?.value
-    var authenticated by remember { mutableStateOf(false) }
+
+    val countriesList = getCountries.countries.observeAsState()
+
+    val authState by authViewModel?.authState?.collectAsState() ?: mutableStateOf(null)
+    val userState = remember { mutableStateOf<User?>(null) }
+
     var haveAcc by remember { mutableStateOf(false) }
     val changeHaveAcc = { haveAcc = !haveAcc }
 
+    LaunchedEffect(Unit) {
+        getCountries.loadCountries()
+    }
+
     LaunchedEffect(authState) {
-        authViewModel?.checkAuthStatus()
         if (authState is AuthState.Authenticated) {
-            authenticated = true
-        } else {
-            authenticated = false
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            if (uid != null) {
+                authViewModel?.databaseGet(uid) { user ->
+                    userState.value = user
+                }
+            }
         }
     }
 
-        ModalNavigationDrawer(
-            drawerState = drawerState,
-            drawerContent = {
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .background(Color.Transparent)
-                        .width(300.dp)
-                        .padding(bottom = 100.dp),
-                    verticalArrangement = Arrangement.Bottom,
-                    horizontalAlignment = Alignment.End
-                ) {
-                    HomeScreen(
-                        onPracticeClick = { navController.navigate(Routes.PRACTICE)
-                            scope.launch { drawerState.close ()}
-                                          },
-                        onSettingsClick = { navController.navigate(Routes.SETTINGS)
-                            scope.launch { drawerState.close ()}
-                                          },
-                        onAccountClick = { navController.navigate(Routes.ACCOUNT)
-                            scope.launch { drawerState.close ()}
-                                         },
-                        onSignClick = { navController.navigate(Routes.SIGN)
-                            scope.launch { drawerState.close ()}
-                                      },
-                        authenticated = authenticated,
-                        haveAcc = haveAcc,
-                        changeHaveAcc = changeHaveAcc
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .background(Color.Transparent)
+                    .width(300.dp)
+                    .padding(bottom = 150.dp),
+                verticalArrangement = Arrangement.Bottom,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Menu(
+                    onPracticeClick = {
+                        navController.navigate(Routes.PRACTICE)
+                        scope.launch { drawerState.close() }
+                    },
+                    onSettingsClick = {
+                        navController.navigate(Routes.SETTINGS)
+                        scope.launch { drawerState.close() }
+                    },
+                    onAccountClick = {
+                        navController.navigate(Routes.ACCOUNT)
+                        scope.launch { drawerState.close() }
+                    },
+                    onSignClick = {
+                        navController.navigate(Routes.SIGN)
+                        scope.launch { drawerState.close() }
+                    },
+                    authenticated = authState is AuthState.Authenticated,
+                    haveAcc = haveAcc,
+                    changeHaveAcc = changeHaveAcc
+                )
+            }
+        }
+    ) {
+        Scaffold(
+            bottomBar = {
+                BottomAppBar(
+                    containerColor = mainBackgroundColor,
+                    actions = {
+                        IconButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate(Routes.GAME) }) {
+                            Icon(
+                                Icons.Filled.PlayArrow,
+                                contentDescription = "Game",
+                                tint = highlightColor,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                        IconButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(
+                                Icons.Filled.Menu,
+                                contentDescription = "Menu",
+                                tint = highlightColor,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
+                )
+            },
+        ) { innerPadding ->
+            NavHost(
+                navController,
+                startDestination = Routes.HOME,
+                Modifier.padding(innerPadding)
+            ) {
+                composable(Routes.HOME) {
+                    if (authViewModel != null) {
+                        HomeScreen(
+                            authViewModel = authViewModel,
+                            authState = authState ?: AuthState.Unauthenticated,
+                            userState = userState.value
+                        )
+                    } else {
+                        // Handle the case where authViewModel is null
+                        Text("Error: AuthViewModel is not available")
+                    }
+                }
+                composable(Routes.GAME) {
+                    GameScreen(
+                        modifier = Modifier,
+                        gameViewModel = gameViewModel,
+                        onButtonClick = {}
                     )
                 }
-            }
-
-        ) {
-            Scaffold(
-                bottomBar = {
-                    BottomAppBar(
-                        containerColor = mainBackgroundColor,
-                        actions = {
-
-                            IconButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = { navController.navigate(Routes.GAME) }) {
-                                Icon(
-                                    Icons.Filled.PlayArrow,
-                                    contentDescription = "Game",
-                                    tint = highlightColor,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                            IconButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(
-                                    Icons.Filled.Menu,
-                                    contentDescription = "Menu",
-                                    tint = highlightColor,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                            }
-                        }
+                composable(Routes.PRACTICE) {
+                    PracticeScreen(
+                        onButtonClick = { navController.popBackStack() }
                     )
-                },
-            ) { innerPadding ->
-                NavHost(
-                    navController,
-                    startDestination = Routes.GAME,
-                    Modifier.padding(innerPadding)
-                ) {
-                    composable(Routes.GAME) {
-                        GameScreen(
-                            modifier = Modifier,
-                            gameViewModel = gameViewModel,
-                            onButtonClick = {}
-                        )
-                    }
-                    composable(Routes.PRACTICE) {
-                        PracticeScreen(
-                            onButtonClick = { navController.popBackStack() }
-                        )
-                    }
-                    composable(Routes.SETTINGS) {
-                        SettingsScreen(
-                            onButtonClick = { navController.popBackStack() }
-                        )
-                    }
-                    composable(Routes.ACCOUNT) {
-                        AccountScreen(
+                }
+                composable(Routes.SETTINGS) {
+                    SettingsScreen(
+                        onButtonClick = { navController.popBackStack() }
+                    )
+                }
+                composable(Routes.ACCOUNT) {
+                    AccountScreen(
+                        authViewModel = authViewModel,
+                        userState = userState.value,
+                        onButtonClick = { navController.popBackStack() }
+                    )
+                }
+                composable(Routes.SIGN) {
+                    if (haveAcc) {
+                        LogIn(
                             authViewModel = authViewModel,
-                            onButtonClick = { navController.popBackStack() }
-                        )
-                    }
-                    composable(Routes.SIGN) {
-                        LoginScreen(
-                            onButtonClick = { navController.popBackStack() },
+                            navOnLogin = {
+                                navController.popBackStack()
+                            })
+                    } else {
+                        SignUp(
                             authViewModel = authViewModel,
-                            authState = authState,
-                            haveAcc = haveAcc,
-                            navOnLogin = { navController.navigate(Routes.ACCOUNT) },
-                        )
-
+                            navOnLogin = {
+                                navController.popBackStack()
+                            },
+                            countriesList = countriesList.value)
                     }
                 }
             }
         }
-
+    }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun BottomAppBarExamplePreview() {
-    TabNav(authViewModel = null)
+    val mockAuthViewModel = AuthViewModel().apply {
+        // Set up mock data for the preview
+    }
+    TabNav(authViewModel = mockAuthViewModel)
 }

@@ -16,7 +16,10 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
@@ -30,58 +33,7 @@ data class User(
     val country: String? = null,
 )
 
-data class Country(
-    val name: Name,
-    val cca2: String,
-    val flags: Flags
-)
 
-data class Name(
-    val common: String
-)
-
-data class Flags(
-    val png: String
-)
-
-interface CountryRepository {
-    @GET("v3.1/all")
-    suspend fun getCountries(
-        @Query("region") region: String? = null,
-        @Query("q") query: String? = null
-    ): List<Country>
-}
-
-class getCountriesViewModel : ViewModel() {
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://restcountries.com/") // Ensure the baseUrl ends with a '/'
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val countryApiService = retrofit.create(CountryRepository::class.java)
-
-    private val _countries = MutableLiveData<List<Country>>()
-    val countries: LiveData<List<Country>> = _countries
-
-
-    init {
-        loadCountries()
-    }
-
-    fun loadCountries(region: String? = null, query: String? = null) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-
-                val countriesList = countryApiService.getCountries(region, query)
-                val flags = countriesList.map { it.flags.png }
-                val sortedCountriesList = countriesList.sortedBy { it.name.common }
-                _countries.postValue(sortedCountriesList)
-                Log.d("Countries", "Countries loaded: $countriesList")
-            } catch (e: Exception) {
-                Log.e("getCountriesViewModel", "Error loading countries", e)
-            }
-        }
-    }
-}
 
 
 class AuthViewModel(): ViewModel() {
@@ -89,37 +41,32 @@ class AuthViewModel(): ViewModel() {
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val database = Firebase.database.reference
 
-    protected val _authState = MutableLiveData<AuthState>()
-    val authState: LiveData<AuthState> = _authState
+    private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
+    val authState: StateFlow<AuthState> = _authState
 
     init {
         checkAuthStatus()
     }
 
     fun checkAuthStatus() {
-        _authState.value = if (auth.currentUser != null) {
-            AuthState.Authenticated
-        } else {
-            AuthState.Unauthenticated
+        viewModelScope.launch {
+
+            val isAuthenticated = FirebaseAuth.getInstance().currentUser != null
+            _authState.value =
+                if (isAuthenticated) AuthState.Authenticated else AuthState.Unauthenticated
         }
     }
 
     fun signIn(email: String, password: String) {
-        _authState.value = AuthState.Loading
-
-        if (email.isEmpty() || password.isEmpty()) {
-            _authState.value = AuthState.Error("Email or password can't be empty")
-            return
-        }
-
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    checkAuthStatus()
-                } else {
-                    _authState.value = AuthState.Error(task.exception?.message ?: "Sign in failed")
-                }
+        viewModelScope.launch {
+            try {
+                // Perform sign-in and update _authState
+                auth.signInWithEmailAndPassword(email, password).await()
+                _authState.value = AuthState.Authenticated
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
+        }
     }
 
     fun highScore(highscore: Int) {
@@ -130,6 +77,7 @@ class AuthViewModel(): ViewModel() {
             database.child("Users").child(uid).child("highScore").setValue(highscore)
         }
     }
+
     fun updateAccount(username: String, email: String, country: String) {
         val user = auth.currentUser
         if (user != null) {
@@ -142,7 +90,11 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-    fun updatePassword(oldPassword: String, newPassword: String, onResult: (Boolean, String?) -> Unit) {
+    fun updatePassword(
+        oldPassword: String,
+        newPassword: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
         val user = auth.currentUser
         if (user != null) {
             val credential = EmailAuthProvider.getCredential(user.email!!, oldPassword)
@@ -174,6 +126,7 @@ class AuthViewModel(): ViewModel() {
             Log.e("Firebase", "User UID is null")
         }
     }
+
     fun databaseAdd(uid: String, username: String, email: String, country: String) {
         val newUser = User(
             username = username,
@@ -203,28 +156,15 @@ class AuthViewModel(): ViewModel() {
     }
 
     fun signUp(email: String, password: String, username: String, country: String) {
-        _authState.value = AuthState.Loading
-
-        if (email.isBlank() || password.isBlank() || username.isBlank() || country.isBlank()) {
-            _authState.value = AuthState.Error("Fields cannot be empty")
-            return
-        }
-
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = auth.currentUser
-                    val uid = user?.uid
-
-                    if (uid != null) {
-                        databaseAdd(uid, username, email, country)
-                    }
-                    checkAuthStatus()
-                } else {
-                    val errorMessage = task.exception?.localizedMessage ?: "Unknown error"
-                    _authState.value = AuthState.Error(errorMessage)
-                }
+        viewModelScope.launch {
+            try {
+                // Perform sign-up and update _authState
+                auth.createUserWithEmailAndPassword(email, password).await()
+                _authState.value = AuthState.Authenticated
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
+        }
     }
 
     fun setUnauthenticated() {
@@ -232,11 +172,18 @@ class AuthViewModel(): ViewModel() {
     }
 
     fun signOut() {
-        auth.signOut()
-        _authState.value = AuthState.Unauthenticated
+        viewModelScope.launch {
+            try {
+                auth.signOut()
+                _authState.value = AuthState.Unauthenticated
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Unknown error")
+            }
+        }
     }
 }
 
+@IgnoreExtraProperties
 sealed class AuthState {
     data object Authenticated : AuthState()
     data object Unauthenticated : AuthState()
