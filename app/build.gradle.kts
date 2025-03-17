@@ -63,7 +63,7 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
     ksp("androidx.room:room-compiler:$room_version")
 
-
+    implementation("androidx.compose.material3:material3:1.2.0")
 
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.40")
     implementation("androidx.core:core-splashscreen:1.0.0")

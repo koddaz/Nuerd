@@ -6,8 +6,8 @@ import com.example.nuerd.ui.theme.NuerdTheme
 
 
 @Composable
-fun TablesScreen(onButtonClick: () -> Unit, modifier: Modifier = Modifier, navigatePractice: () -> Unit = {}) {
-        ScrollingColumn()
+fun TablesScreen(tableNumber: Int, onTableNumberChange: (Int) -> Unit) {
+        ScrollingColumn(tableNumber = tableNumber, onTableNumberChange = onTableNumberChange)
 }
 
 
@@ -18,6 +18,6 @@ fun TablesScreen(onButtonClick: () -> Unit, modifier: Modifier = Modifier, navig
 @Composable
 fun TablesScreenPreview() {
     NuerdTheme(theme = "Green") {
-        TablesScreen(onButtonClick = {})
+        TablesScreen(tableNumber = 1, onTableNumberChange = {})
     }
 }

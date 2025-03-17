@@ -12,8 +12,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
+import kotlin.text.toInt
+import kotlin.times
 
-class GameViewModel(application: Application): ViewModel() {
+class GameViewModel(
+    application: Application,
+    private val highScoreViewModel: HighScoreViewModel
+) : ViewModel() {
     private val db = Room.databaseBuilder(
         application,
         AppDatabase::class.java,
@@ -46,22 +51,24 @@ class GameViewModel(application: Application): ViewModel() {
     val difficultyTime: StateFlow<Int> = _difficultyTime.asStateFlow()
 
     fun setDifficulty(newDifficulty: Int) {
-        _difficulty.value = newDifficulty
-        _difficultyTime.value = when (newDifficulty) {
-            1 -> 10
-            2 -> 5
-            else -> 3
-        }
-
         viewModelScope.launch {
+            _difficulty.value = newDifficulty
+            _difficultyTime.value = when (newDifficulty) {
+                1 -> 10
+                2 -> 5
+                else -> 3
+            }
+
+
             difficultyDao.insert(Difficulty(0, newDifficulty))
-        }
-        if (_difficulty.value == 1) {
-            Log.d("GameViewModel", "Difficulty set to Easy")
-        } else if (_difficulty.value == 2) {
-            Log.d("GameViewModel", "Difficulty set to Medium")
-        } else {
-            Log.d("GameViewModel", "Difficulty set to Hard")
+
+            if (_difficulty.value == 1) {
+                Log.d("GameViewModel", "Difficulty set to Easy")
+            } else if (_difficulty.value == 2) {
+                Log.d("GameViewModel", "Difficulty set to Medium")
+            } else {
+                Log.d("GameViewModel", "Difficulty set to Hard")
+            }
         }
     }
     // val authViewModel = AuthViewModel()
@@ -89,18 +96,17 @@ class GameViewModel(application: Application): ViewModel() {
         val numberList = mutableSetOf<Int>()
         numberList.add(_result.value)
 
+        val minRange = (_result.value * 0.7).toInt().coerceAtLeast(1)
+        val maxRange = (_result.value * 1.3).toInt().coerceAtLeast(_result.value + 5)
+
         while (numberList.size < _listSize.value) {
-            val randomNumber = Random.nextInt(1, 99)
+            val randomNumber = Random.nextInt(minRange, maxRange + 1)
             if (randomNumber != _result.value) {
                 numberList.add(randomNumber)
             }
-
-            _randomNumbers.value = numberList.toList().shuffled()
-
         }
 
-
-        _randomNumbers.value = numberList.shuffled()
+        _randomNumbers.value = numberList.toList().shuffled()
     }
 
     // Random numbers for the buttons
@@ -141,8 +147,8 @@ class GameViewModel(application: Application): ViewModel() {
         if (_lives.value == 0) {
             return
         } else {
-        _lives.value--
-        _timeRemaining.value = difficultyTime.value }
+            _lives.value--
+            _timeRemaining.value = difficultyTime.value }
     }
 
     fun resetGame() {
@@ -179,10 +185,48 @@ class GameViewModel(application: Application): ViewModel() {
                 _timeRemaining.value = difficultyTime.value  // Reset timer
                 countdown()  // Start new countdown
             } else if (_lives.value == 0) {
-                // authViewModel.highScore(_scoreNumber.value)
+                highScoreViewModel.saveHighScore(score = _scoreNumber.value)
                 _isPlaying.value = false
             }
         }
     }
 
+    // Practice
+    private val _wrongAnswers = MutableStateFlow(0)
+    private val _correctAnswers = MutableStateFlow(0)
+    val wrongAnswers: StateFlow<Int> = _wrongAnswers.asStateFlow()
+    val correctAnswers: StateFlow<Int> = _correctAnswers.asStateFlow()
+
+    fun practiceCorrect() {
+        _correctAnswers.value++
+    }
+    fun practiceWrong() {
+        if (_wrongAnswers.value >= 0) {
+            _wrongAnswers.value++
+        } else {
+            _wrongAnswers.value = 0
+        }
+    }
+
+    fun calculateWithTable(tableNumber: Int) {
+
+        _firstNumber.value = tableNumber
+        _secondNumber.value = Random.nextInt(1, 10)
+        _result.value = tableNumber * _secondNumber.value
+
+        val numberList = mutableSetOf<Int>()
+        numberList.add(_result.value)
+
+        val minRange = (_result.value * 0.7).toInt().coerceAtLeast(1)
+        val maxRange = (_result.value * 1.3).toInt().coerceAtLeast(_result.value + 5)
+
+        while (numberList.size < _listSize.value) {
+            val randomNumber = Random.nextInt(minRange, maxRange + 1)
+            if (randomNumber != _result.value) {
+                numberList.add(randomNumber)
+            }
+        }
+
+        _randomNumbers.value = numberList.toList().shuffled()
+    }
 }

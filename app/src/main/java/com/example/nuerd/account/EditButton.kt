@@ -1,6 +1,7 @@
 package com.example.nuerd.account
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,10 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EditButton(modifier: Modifier = Modifier, onClick: () -> Unit, title: String, icon: ImageVector) {
+fun EditButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    title: String,
+    icon: ImageVector,
+    iconPlacement: Int = 1,
+    spacerLength: Dp = 8.dp
+) {
 
 
     Surface(
@@ -28,17 +37,29 @@ fun EditButton(modifier: Modifier = Modifier, onClick: () -> Unit, title: String
         tonalElevation = 4.dp,
         color = colorScheme.background,
         border = BorderStroke(2.dp, colorScheme.surface),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Row(modifier.padding(8.dp)) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                tint = colorScheme.onPrimary
-            )
+            if (iconPlacement == 1) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = colorScheme.onPrimary
+                )
+            }
             Spacer(modifier = Modifier.width(8.dp))
             Text(title, color = colorScheme.onPrimary)
+            if (iconPlacement == 2) {
+                Row(modifier.weight(1f),
+                    horizontalArrangement = Arrangement.End) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = colorScheme.onPrimary
+                    )
+                }
+            }
         }
     }
-    Spacer(modifier = Modifier.height(8.dp))
+    Spacer(modifier = Modifier.height(spacerLength))
 }

@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,30 +29,24 @@ import com.example.nuerd.ui.theme.NuerdTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun ScrollingColumn(modifier: Modifier = Modifier) {
-    val pagerState = rememberPagerState(pageCount = {
+fun ScrollingColumn(
+    modifier: Modifier = Modifier,
+    tableNumber: Int,
+    onTableNumberChange: (Int) -> Unit,
+    ) {
+    val pagerState = rememberPagerState(
+        initialPage = tableNumber - 1,
+        pageCount = {
         10
     })
     val coroutineScope = rememberCoroutineScope()
-    val tablePage = pagerState.currentPage + 1
-    val forward = {
-        coroutineScope.launch {
-            pagerState.animateScrollToPage(pagerState.currentPage - 1)
-        }
+    LaunchedEffect(pagerState.currentPage) {
+        onTableNumberChange(pagerState.currentPage + 1)
     }
 
-    Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(horizontal = 16.dp)) {
 
-        Column(modifier.fillMaxWidth()
-            .background(colorScheme.background, RoundedCornerShape(8.dp))
-            .border(width = 2.dp, color = colorScheme.surface, RoundedCornerShape(8.dp))
-            .padding(16.dp)) {
-            Text(
-                text = "Table $tablePage",
-                style = MaterialTheme.typography.titleLarge,
-                color = colorScheme.onPrimary
-            )
-        }
+
         Spacer(modifier = Modifier.padding(8.dp))
 
             HorizontalPager(
@@ -64,16 +59,17 @@ fun ScrollingColumn(modifier: Modifier = Modifier) {
 
         
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Row(modifier.fillMaxWidth()) {
             EditButton(
-
                 modifier = Modifier.weight(1f),
                 icon = Icons.AutoMirrored.Filled.ArrowBack,
                 onClick = {
                     coroutineScope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                    }
+                        if (pagerState.currentPage > 0) {
+                            pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                        }
+                        }
                 }, title = "Back")
             Spacer(modifier = Modifier.padding(4.dp))
             EditButton(
@@ -81,9 +77,12 @@ fun ScrollingColumn(modifier: Modifier = Modifier) {
                 icon = Icons.AutoMirrored.Filled.ArrowForward,
                 onClick = {
                     coroutineScope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        if (pagerState.currentPage < 9) {
+                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                        }
                     }
                 },
+                iconPlacement = 2,
                 title = "Next"
             )
 
@@ -95,6 +94,6 @@ fun ScrollingColumn(modifier: Modifier = Modifier) {
 @Composable
 fun ColumnPreview() {
     NuerdTheme(theme = "Green") {
-        ScrollingColumn()
+        ScrollingColumn(tableNumber = 1, onTableNumberChange = {})
     }
 }

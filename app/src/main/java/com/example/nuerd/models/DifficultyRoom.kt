@@ -104,7 +104,7 @@ class GameViewModelFactory(private val application: Application) : ViewModelProv
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(GameViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return GameViewModel(application) as T
+            return GameViewModel(application, highScoreViewModel = HighScoreViewModel()) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
