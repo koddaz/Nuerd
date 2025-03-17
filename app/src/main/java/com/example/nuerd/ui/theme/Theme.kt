@@ -1,61 +1,106 @@
 package com.example.nuerd.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
-import com.example.nuerd.R
 
+private val GreenLightColorScheme = lightColorScheme(
+    primary = mainBackgroundColor,
+    secondary = buttonBackgroundColor,
+    background = secondaryBackgroundColor,
+    surface = highlightColor,
+    onPrimary = textColor,
+    onSecondary = textColor,
+    onBackground = textColor,
+    onSurface = textColor,
+    error = errorColor,
 
-
-
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val GreenDarkColorScheme = darkColorScheme(
+    primary = darkMainBackgroundColor,
+    secondary = darkButtonBackgroundColor,
+    background = darkSecondaryBackgroundColor,
+    surface = darkHighlightColor,
+    onPrimary = darkTextColor,
+    onSecondary = darkTextColor,
+    onBackground = darkTextColor,
+    onSurface = darkTextColor,
+    error = darkErrorColor
+)
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val BlueLightColorScheme = lightColorScheme(
+    primary = mainBackgroundColorBlue,
+    secondary = buttonBackgroundColorBlue,
+    background = secondaryBackgroundColorBlue,
+    surface = highlightColorBlue,
+    onPrimary = textColorBlue,
+    onSecondary = textColorBlue,
+    onBackground = textColorBlue,
+    onSurface = textColorBlue,
+    error = errorColorBlue
+)
+
+private val BlueDarkColorScheme = darkColorScheme(
+    primary = darkMainBackgroundColorBlue,
+    secondary = darkButtonBackgroundColorBlue,
+    background = darkSecondaryBackgroundColorBlue,
+    surface = darkHighlightColorBlue,
+    onPrimary = darkTextColorBlue,
+    onSecondary = darkTextColorBlue,
+    onBackground = darkTextColorBlue,
+    onSurface = darkTextColorBlue,
+    error = darkErrorColorBlue
+)
+
+private val YellowLightColorScheme = lightColorScheme(
+    primary = mainBackgroundColorYellow,
+    secondary = buttonBackgroundColorYellow,
+    background = secondaryBackgroundColorYellow,
+    surface = highlightColorYellow,
+    onPrimary = textColorYellow,
+    onSecondary = textColorYellow,
+    onBackground = textColorYellow,
+    onSurface = textColorYellow,
+    error = errorColorYellow
+)
+
+private val YellowDarkColorScheme = darkColorScheme(
+    primary = darkMainBackgroundColorYellow,
+    secondary = darkButtonBackgroundColorYellow,
+    background = darkSecondaryBackgroundColorYellow,
+    surface = darkHighlightColorYellow,
+    onPrimary = darkTextColorYellow,
+    onSecondary = darkTextColorYellow,
+    onBackground = darkTextColorYellow,
+    onSurface = darkTextColorYellow,
+    error = darkErrorColorYellow
 )
 
 
 @Composable
 fun NuerdTheme(
+    theme: String = "Green",
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Never use dynamic colors
+    // dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    // Always use your custom color schemes
+    val colorScheme = if (darkTheme) {
+        when (theme) {
+            "Blue" -> BlueDarkColorScheme
+            "Yellow" -> YellowDarkColorScheme
+            else -> GreenDarkColorScheme
         }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    } else {
+        when (theme) {
+            "Blue" -> BlueLightColorScheme
+            "Yellow" -> YellowLightColorScheme
+            else -> GreenLightColorScheme
+        }
     }
 
     MaterialTheme(

@@ -1,10 +1,8 @@
 package com.example.nuerd.game
 
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,6 +11,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,24 +24,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.models.GameButtonsViewModel
 import com.example.nuerd.models.GameViewModel
 import com.example.nuerd.ui.theme.NuerdTheme
-import com.example.nuerd.ui.theme.highlightColor
-import com.example.nuerd.ui.theme.mainBackgroundColor
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun BouncingButton(
-    gameViewModel: GameViewModel,
+    gameViewModel: GameViewModel?,
     modifier: Modifier = Modifier,
     buttonViewModel: GameButtonsViewModel,
     number: Int,
@@ -50,9 +43,7 @@ fun BouncingButton(
     result: Int,
     flashDurationMillis: Int = 50
 ) {
-
     val scope = rememberCoroutineScope()
-    // Animations: Movement
     val x by buttonViewModel.xPosition
     val y by buttonViewModel.yPosition
     val animatedX by animateDpAsState(
@@ -60,20 +51,22 @@ fun BouncingButton(
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
-        ), label = "Animated X"
+        )
     )
-
     val animatedY by animateDpAsState(
         targetValue = y.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessMedium
-        ), label = "Animated Y"
+        )
     )
     val ballSize by buttonViewModel.ballSize.collectAsState()
 
-    // Flashing:
-    var currentColor by remember { mutableStateOf(highlightColor) }
+    val primaryColor = colorScheme.surface
+    val errorColor = colorScheme.error
+    var currentColor by remember { mutableStateOf(primaryColor) }
+
+
 
     LaunchedEffect(allButtons) {
         buttonViewModel.startBouncing(allButtons)
@@ -84,35 +77,33 @@ fun BouncingButton(
             .size(ballSize.dp)
             .offset { IntOffset(animatedX.roundToPx(), animatedY.roundToPx()) }
             .clickable {
-
-                    if (number == result) {
-                        gameViewModel.correctButton()
-                    } else {
-                        scope.launch {
-                            currentColor = Color.Red
-                            delay(flashDurationMillis.toLong())
-
-                        currentColor = highlightColor}
-                        
-                        gameViewModel.looseLife()
-                        gameViewModel.calculate()
-                        // randomize()
+                if (number == result) {
+                    gameViewModel?.correctButton()
+                } else {
+                    scope.launch {
+                        currentColor = errorColor
+                        delay(flashDurationMillis.toLong())
+                        currentColor = primaryColor
                     }
-
-                gameViewModel.countdown()
+                    gameViewModel?.looseLife()
+                    gameViewModel?.calculate()
+                }
+                gameViewModel?.countdown()
             }
             .border(width = 2.dp, color = currentColor, shape = CircleShape),
-
         contentAlignment = Alignment.Center
     ) {
-        Text("$number", color = currentColor,
-            style = MaterialTheme.typography.bodyLarge)
+        Text(
+            "$number",
+            color = currentColor,
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 }
 
 @Composable
 fun GameButtons(
-    gameViewModel: GameViewModel,
+    gameViewModel: GameViewModel?,
     result: Int,
     randomNumbers: List<Int>
 ) {
@@ -130,7 +121,7 @@ fun GameButtons(
     Box(
         Modifier
             .size(300.dp)
-            .background(mainBackgroundColor)
+            .background(colorScheme.primary)
     ) {
         buttonViewModels.forEachIndexed { index, buttonViewModel ->
             BouncingButton(
@@ -138,8 +129,7 @@ fun GameButtons(
                 number = randomNumbers[index],
                 buttonViewModel = buttonViewModel,
                 allButtons = buttonViewModels.toList(),
-                result = result,
-
+                result = result
             )
         }
     }
@@ -148,7 +138,11 @@ fun GameButtons(
 @Preview(showBackground = true)
 @Composable
 fun GameButtonsPreview() {
-    NuerdTheme  {
-        GameButtons(result = 0, randomNumbers = listOf(1, 2, 3), gameViewModel = viewModel())
+    NuerdTheme(theme = "Green") {
+        GameButtons(
+            result = 0,
+            randomNumbers = listOf(1, 2, 3),
+            gameViewModel = null
+            )
     }
 }

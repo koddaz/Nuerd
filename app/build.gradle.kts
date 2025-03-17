@@ -3,6 +3,10 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
+    id("androidx.room")
+
+
 
 }
 
@@ -19,6 +23,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
+
 
     buildTypes {
         release {
@@ -39,6 +44,9 @@ android {
     buildFeatures {
         compose = true
     }
+    room {
+        schemaDirectory("schemas")
+    }
 }
 
 dependencies {
@@ -46,6 +54,16 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.1.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+    // Room
+
+    val room_version = "2.6.1"
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+
+
 
     implementation("com.googlecode.libphonenumber:libphonenumber:8.12.40")
     implementation("androidx.core:core-splashscreen:1.0.0")
@@ -55,12 +73,14 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0")
     // Import the BoM for the Firebase platform
     implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
-
+    implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.android.gms:play-services-auth:21.3.0")
     implementation("com.google.firebase:firebase-analytics")
+
+    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
 
     // Navigation
     implementation(libs.kotlinx.serialization.json)

@@ -1,7 +1,10 @@
 package com.example.nuerd.models
 
+import android.app.Application
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.Room
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,8 +13,57 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
-class GameViewModel: ViewModel() {
+class GameViewModel(application: Application): ViewModel() {
+    private val db = Room.databaseBuilder(
+        application,
+        AppDatabase::class.java,
+        "app_database"
+    ).build()
+    private val difficultyDao = db.settingsDao()
 
+    // Settings for the game:
+    private val _difficulty = MutableStateFlow(1)
+    val difficulty: StateFlow<Int> = _difficulty.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            val savedDifficulty = difficultyDao.getDifficulty()
+            if (savedDifficulty != null) {
+                _difficulty.value = savedDifficulty.value
+            }
+        }
+    }
+
+    private val _difficultyTime = MutableStateFlow(
+        if (_difficulty.value == 1) {
+            10
+        } else if (_difficulty.value == 2) {
+            5
+        } else {
+            3
+        }
+    )
+    val difficultyTime: StateFlow<Int> = _difficultyTime.asStateFlow()
+
+    fun setDifficulty(newDifficulty: Int) {
+        _difficulty.value = newDifficulty
+        _difficultyTime.value = when (newDifficulty) {
+            1 -> 10
+            2 -> 5
+            else -> 3
+        }
+
+        viewModelScope.launch {
+            difficultyDao.insert(Difficulty(0, newDifficulty))
+        }
+        if (_difficulty.value == 1) {
+            Log.d("GameViewModel", "Difficulty set to Easy")
+        } else if (_difficulty.value == 2) {
+            Log.d("GameViewModel", "Difficulty set to Medium")
+        } else {
+            Log.d("GameViewModel", "Difficulty set to Hard")
+        }
+    }
     // val authViewModel = AuthViewModel()
 
     // Random numbers for the game and the result
@@ -28,11 +80,6 @@ class GameViewModel: ViewModel() {
     private val _listSize = MutableStateFlow(3)
     val randomNumbers: StateFlow<List<Int>> = _randomNumbers.asStateFlow()
 
-    fun removeFromList() {
-        val currentList = _randomNumbers.value.toMutableList()
-        currentList.remove(_result.value)
-        _randomNumbers.value = currentList
-    }
 
     fun calculate() {
         _firstNumber.value = Random.nextInt(1, 10)
@@ -52,34 +99,7 @@ class GameViewModel: ViewModel() {
 
         }
 
-        /*
-        val numbersList = if (_result.value <= 4) {
-            listOf(
-                _result.value + 1,
-                _result.value + 2,
-                _result.value + 3,
-                _result.value + 4,
-                _result.value,
-                _result.value + 5,
-                _result.value + 6,
-                _result.value + 7,
-                _result.value + 8
-            )
-        } else {
-            listOf(
-                _result.value - 4,
-                _result.value - 3,
-                _result.value - 2,
-                _result.value - 1,
-                _result.value,
-                _result.value + 1,
-                _result.value + 2,
-                _result.value + 3,
-                _result.value + 4
-            )
-        }
 
-         */
         _randomNumbers.value = numberList.shuffled()
     }
 
@@ -90,7 +110,7 @@ class GameViewModel: ViewModel() {
         calculate()
     }
 
-    private val _timeRemaining = MutableStateFlow(10)
+    private val _timeRemaining = MutableStateFlow(difficultyTime.value)
     private val _isPlaying = MutableStateFlow(false)
     private val _lives = MutableStateFlow(3)
     private val _scoreNumber = MutableStateFlow(0)
@@ -112,7 +132,7 @@ class GameViewModel: ViewModel() {
             _listSize.value++
             scoreIncreased = 0
         }
-        _timeRemaining.value = 10
+        _timeRemaining.value = difficultyTime.value
         calculate()  // Calculate new numbers first
         countdown()
     }
@@ -122,12 +142,12 @@ class GameViewModel: ViewModel() {
             return
         } else {
         _lives.value--
-        _timeRemaining.value = 10 }
+        _timeRemaining.value = difficultyTime.value }
     }
 
     fun resetGame() {
         _scoreNumber.value = 0
-        _timeRemaining.value = 10
+        _timeRemaining.value = difficultyTime.value
         _lives.value = 3
         _isPlaying.value = false
         scoreIncreased = 0
@@ -156,7 +176,7 @@ class GameViewModel: ViewModel() {
             // When countdown reaches zero
             if (_timeRemaining.value == 0 && _lives.value > 0) {
                 looseLife()
-                _timeRemaining.value = 10  // Reset timer
+                _timeRemaining.value = difficultyTime.value  // Reset timer
                 countdown()  // Start new countdown
             } else if (_lives.value == 0) {
                 // authViewModel.highScore(_scoreNumber.value)

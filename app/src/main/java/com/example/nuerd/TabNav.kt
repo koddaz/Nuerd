@@ -1,4 +1,6 @@
+/*
 import android.annotation.SuppressLint
+import android.app.Application
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -38,12 +41,12 @@ import com.example.nuerd.models.AuthState
 import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.models.GameViewModel
 import com.example.nuerd.models.Routes
+import com.example.nuerd.models.ThemeViewModel
 import com.example.nuerd.models.User
 import com.example.nuerd.models.getCountriesViewModel
-import com.example.nuerd.practie.PracticeScreen
+import com.example.nuerd.practie.PracticeNavHost
 import com.example.nuerd.settings.SettingsScreen
-import com.example.nuerd.ui.theme.highlightColor
-import com.example.nuerd.ui.theme.mainBackgroundColor
+
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
@@ -52,10 +55,12 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun TabNav(
-    gameViewModel: GameViewModel = viewModel(),
+    themeViewModel: ThemeViewModel? = viewModel(),
     authViewModel: AuthViewModel? = viewModel(),
+    gameViewModel: GameViewModel? = viewModel(),
     getCountries: getCountriesViewModel = viewModel()
 ) {
+
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -112,9 +117,8 @@ fun TabNav(
                         navController.navigate(Routes.SIGN)
                         scope.launch { drawerState.close() }
                     },
+                    onPlayClick = {},
                     authenticated = authState is AuthState.Authenticated,
-                    haveAcc = haveAcc,
-                    changeHaveAcc = changeHaveAcc
                 )
             }
         }
@@ -122,7 +126,7 @@ fun TabNav(
         Scaffold(
             bottomBar = {
                 BottomAppBar(
-                    containerColor = mainBackgroundColor,
+                    containerColor = colorScheme.background,
                     actions = {
                         IconButton(
                             modifier = Modifier.weight(1f),
@@ -130,7 +134,7 @@ fun TabNav(
                             Icon(
                                 Icons.Filled.PlayArrow,
                                 contentDescription = "Game",
-                                tint = highlightColor,
+                                tint = colorScheme.onBackground,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
@@ -140,7 +144,7 @@ fun TabNav(
                             Icon(
                                 Icons.Filled.Menu,
                                 contentDescription = "Menu",
-                                tint = highlightColor,
+                                tint = colorScheme.onBackground,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
@@ -156,7 +160,6 @@ fun TabNav(
                 composable(Routes.HOME) {
                     if (authViewModel != null) {
                         HomeScreen(
-                            authViewModel = authViewModel,
                             authState = authState ?: AuthState.Unauthenticated,
                             userState = userState.value
                         )
@@ -166,20 +169,25 @@ fun TabNav(
                     }
                 }
                 composable(Routes.GAME) {
-                    GameScreen(
-                        modifier = Modifier,
-                        gameViewModel = gameViewModel,
-                        onButtonClick = {}
-                    )
+                    gameViewModel?.let { it1 ->
+                        GameScreen(
+                            modifier = Modifier,
+                            gameViewModel = it1,
+                            onButtonClick = {}
+                        )
+                    }
                 }
                 composable(Routes.PRACTICE) {
-                    PracticeScreen(
+                    PracticeNavHost(
+                        gameViewModel = gameViewModel!!,
                         onButtonClick = { navController.popBackStack() }
                     )
                 }
                 composable(Routes.SETTINGS) {
                     SettingsScreen(
-                        onButtonClick = { navController.popBackStack() }
+                        onButtonClick = { navController.popBackStack() },
+                        gameViewModel = gameViewModel,
+                        themeViewModel = themeViewModel
                     )
                 }
                 composable(Routes.ACCOUNT) {
@@ -218,5 +226,17 @@ fun BottomAppBarExamplePreview() {
     val mockAuthViewModel = AuthViewModel().apply {
         // Set up mock data for the preview
     }
-    TabNav(authViewModel = mockAuthViewModel)
+    val mockApplication = Application() // Mock application instance
+    val mockGameViewModel = GameViewModel(
+        application = mockApplication
+    ).apply {
+        // Set up mock data for the preview
+    }
+    TabNav(
+        themeViewModel = viewModel(),
+        authViewModel = mockAuthViewModel,
+        gameViewModel = mockGameViewModel,
+        getCountries = viewModel()
+    )
 }
+ */

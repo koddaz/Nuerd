@@ -1,10 +1,6 @@
 package com.example.nuerd.models
 
 import android.util.Log
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.intl.Locale
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.EmailAuthProvider
@@ -15,61 +11,59 @@ import com.google.firebase.database.IgnoreExtraProperties
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.GET
-import retrofit2.http.Query
 
 @IgnoreExtraProperties
 data class User(
-    val username: String? = null,
-    val email: String? = null,
-    val password: String? = null,
-    val country: String? = null,
+    val username: String = "",
+    val email: String = "",
+    val password: String = "",
+    val country: String = "",
+    val id: String = ""
 )
 
 
 
 
-class AuthViewModel(): ViewModel() {
+open class AuthViewModel: ViewModel() {
 
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val database = Firebase.database.reference
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Unauthenticated)
-    val authState: StateFlow<AuthState> = _authState
+    open val authState: StateFlow<AuthState> = _authState
 
     init {
         checkAuthStatus()
     }
 
-    fun checkAuthStatus() {
-        viewModelScope.launch {
+    open fun checkAuthStatus() {
 
-            val isAuthenticated = FirebaseAuth.getInstance().currentUser != null
-            _authState.value =
-                if (isAuthenticated) AuthState.Authenticated else AuthState.Unauthenticated
-        }
+            viewModelScope.launch {
+                val isAuthenticated = FirebaseAuth.getInstance().currentUser != null
+                _authState.value =
+                    if (isAuthenticated) AuthState.Authenticated else AuthState.Unauthenticated
+            }
+
     }
 
     fun signIn(email: String, password: String) {
-        viewModelScope.launch {
-            try {
-                // Perform sign-in and update _authState
-                auth.signInWithEmailAndPassword(email, password).await()
-                _authState.value = AuthState.Authenticated
-            } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: "Unknown error")
+
+            viewModelScope.launch {
+                try {
+                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).await()
+                    _authState.value = AuthState.Authenticated
+                } catch (e: Exception) {
+                    _authState.value = AuthState.Error(e.message ?: "Unknown error")
+                }
             }
-        }
+
     }
 
-    fun highScore(highscore: Int) {
+    open fun highScore(highscore: Int) {
         val user = auth.currentUser
         val uid = user?.uid
 
@@ -78,7 +72,7 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-    fun updateAccount(username: String, email: String, country: String) {
+    open fun updateAccount(username: String, email: String, country: String) {
         val user = auth.currentUser
         if (user != null) {
             val userUpdates = hashMapOf<String, Any>(
@@ -90,7 +84,7 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-    fun updatePassword(
+    open fun updatePassword(
         oldPassword: String,
         newPassword: String,
         onResult: (Boolean, String?) -> Unit
@@ -116,7 +110,7 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-    fun deleteAccount() {
+    open fun deleteAccount() {
         val user = auth.currentUser
         val uid = user?.uid
         if (uid != null) {
@@ -127,16 +121,17 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-    fun databaseAdd(uid: String, username: String, email: String, country: String) {
+    open fun databaseAdd(uid: String, username: String, email: String, country: String) {
         val newUser = User(
             username = username,
             email = email,
             country = country,
+            id = "preview-user-id",
         )
         database.child("Users").child(uid).setValue(newUser) // Store by user UID
     }
 
-    fun databaseGet(userId: String, onResult: (User?) -> Unit) {
+    open fun databaseGet(userId: String, onResult: (User?) -> Unit) {
         database.child("Users").child(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -167,11 +162,8 @@ class AuthViewModel(): ViewModel() {
         }
     }
 
-    fun setUnauthenticated() {
-        _authState.value = AuthState.Unauthenticated
-    }
 
-    fun signOut() {
+    open fun signOut() {
         viewModelScope.launch {
             try {
                 auth.signOut()

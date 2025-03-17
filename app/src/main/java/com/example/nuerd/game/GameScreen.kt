@@ -1,82 +1,93 @@
 package com.example.nuerd.game
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistPlay
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nuerd.R
 import com.example.nuerd.models.GameViewModel
 import com.example.nuerd.ui.theme.NuerdTheme
-import com.example.nuerd.ui.theme.highlightColor
-import com.example.nuerd.ui.theme.mainBackgroundColor
 
 
 @Composable
 fun GameScreen(
     modifier: Modifier = Modifier,
-    gameViewModel: GameViewModel = viewModel(),
+    gameViewModel: GameViewModel? = viewModel(),
     onButtonClick: () -> Unit
-    ) {
-    // firstTimePlaying
-    val firstGame by gameViewModel.firstGame.collectAsState()
-    val firstNumber by gameViewModel.firstNumber.collectAsState()
-    val secondNumber by gameViewModel.secondNumber.collectAsState()
-    val result by gameViewModel.result.collectAsState()
-    val randomNumbers by gameViewModel.randomNumbers.collectAsState()
-    val timeRemaining by gameViewModel.timeRemaining.collectAsState()
-    val lives by gameViewModel.lives.collectAsState()
-    val isPlaying by gameViewModel.isPlaying.collectAsState()
-    val scoreNumber by gameViewModel.scoreNumber.collectAsState()
+) {
+    val firstGame by gameViewModel?.firstGame?.collectAsState()
+        ?: remember { mutableStateOf(true) }
+    val firstNumber by gameViewModel?.firstNumber?.collectAsState()
+        ?: remember { mutableStateOf(1) }
+    val secondNumber by gameViewModel?.secondNumber?.collectAsState()
+        ?: remember { mutableStateOf(1) }
+    val result by gameViewModel?.result?.collectAsState()
+        ?: remember { mutableStateOf(1) }
+    val randomNumbers by gameViewModel?.randomNumbers?.collectAsState()
+        ?: remember { mutableStateOf(listOf(1,2,3,4)) }
+    val timeRemaining by gameViewModel?.timeRemaining?.collectAsState()
+        ?: remember { mutableStateOf( 10 ) }
+    val lives by gameViewModel?.lives?.collectAsState()
+        ?: remember { mutableStateOf(3) }
+    val isPlaying by gameViewModel?.isPlaying?.collectAsState()
+        ?: remember { mutableStateOf(false) }
+    val scoreNumber by gameViewModel?.scoreNumber?.collectAsState()
+        ?: remember { mutableStateOf(0) }
 
     LaunchedEffect(Unit) {
-        gameViewModel.calculate()
+        gameViewModel?.calculate()
     }
-
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(mainBackgroundColor)
+            .background(colorScheme.primary)
             .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-
     ) {
-        Column(modifier
-            .fillMaxWidth()
-            .paint(
-                painter = painterResource(id = R.drawable.background),
-                contentScale = ContentScale.FillBounds // Prevents blurring
-            )
-            .padding(20.dp)) {
-
-            GameInfoRow(lives = lives, timeRemaining = timeRemaining, scoreNumber = scoreNumber)
-            Column(modifier
+        Column(
+            modifier
                 .fillMaxWidth()
-                .height(150.dp)
-                // .border(width = 2.dp, color = highlightColor)
+                .background(colorScheme.primary)
+
+        ) {
+
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
             ) {
                 GameWindow(
                     firstGame = firstGame,
@@ -85,58 +96,121 @@ fun GameScreen(
                     second = secondNumber,
                     isPlaying = isPlaying,
                     modifier = Modifier.weight(1f),
-                    onPlayClicked = {
-                        if (firstGame) {
-                            gameViewModel.startGame() }
-                        else {
-                            gameViewModel.resetGame()
-                            }
-
-                            gameViewModel.calculate()
-                            gameViewModel.countdown()
-
-                    },
-
-                    )
+                    onPlayClicked = {}
+                    /* o
+                       if (firstGame) {
+                           gameViewModel?.startGame()
+                       } else {
+                           gameViewModel?.resetGame()
+                       }
+                       gameViewModel?.calculate()
+                       gameViewModel?.countdown()
+                   } */
+                )
             }
-            Column(modifier.fillMaxWidth(),
-                //.border(width = 3.dp,color = highlightColor),
-
-                horizontalAlignment = Alignment.CenterHorizontally) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .background(colorScheme.background)
+                .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically,) {
+                Column(modifier.weight(1f),
+                    horizontalAlignment = Alignment.Start) {
+                    CountingLives(lives = lives, size = 40)
+                }
+                Column(
+                    modifier = modifier
+                        .weight(1f)
+                        .background(colorScheme.secondary, RoundedCornerShape(8.dp))
+                        .padding(8.dp)
+                ) {
+                    RemainingTime(timeRemaining = timeRemaining)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier
+                    .fillMaxWidth()
+                    .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Box(
                     modifier = Modifier
-                        .size(300.dp) // ✅ Explicitly constrain the bouncing area
-                        .background(Color.Transparent)
+                        .size(300.dp)
+                        .background(colorScheme.primary)
                 ) {
-
                     if (randomNumbers.isNotEmpty() && isPlaying) {
                         GameButtons(
                             gameViewModel = gameViewModel,
                             randomNumbers = randomNumbers,
-                            result = result,
+                            result = result
                         )
                     }
                 }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(colorScheme.background, RoundedCornerShape(8.dp))
+                    .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
+                Column(
+                    modifier = Modifier.weight(1f).background(colorScheme.secondary).padding(8.dp),
+                    horizontalAlignment = Alignment.Start,
+                ) {
+                    ScoreCount(scoreNumber = scoreNumber)
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Row {
+                        CustomIconButton(
+                            onPlayClicked = {
+                                if (firstGame) {
+                                    gameViewModel?.startGame()
+                                } else {
+                                    gameViewModel?.resetGame()
+                                }
+                                gameViewModel?.calculate()
+                                gameViewModel?.countdown()
+                            },
+                            imageVector = Icons.Filled.PlayArrow,
+                            contentDescription = "Play",
+                            tint = colorScheme.onSecondary,
+
+                            )
+                        CustomIconButton(
+                            onPlayClicked = {
+
+                            },
+                            imageVector = Icons.Filled.Pause,
+                            contentDescription = "Pause",
+                            tint = colorScheme.onSecondary,
+
+                            )
+
+                    }
+                }
             }
 
         }
         IconButton(
             onClick = onButtonClick,
         ) {
-            Icon(imageVector = Icons.Filled.Home,
+            Icon(
+                imageVector = Icons.Filled.Home,
                 contentDescription = "Home",
-                tint = highlightColor)
-
+                tint = colorScheme.primary
+            )
         }
-
-
-
-
-
     }
-
 }
+
 
 
 
@@ -150,62 +224,12 @@ fun GameScreen(
 @Preview(showBackground = true)
 @Composable
 fun GameScreenPreview() {
-    NuerdTheme {
+    NuerdTheme(theme = "Green") {
         GameScreen(
 
-            gameViewModel = viewModel(),
+            gameViewModel = null,
             onButtonClick = { }
         )
     }
 }
 
-@Composable
-private fun GameScreenPreviewVersion(
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(mainBackgroundColor)
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center
-    ) {
-        Column(modifier
-            .fillMaxWidth()
-            .paint(
-                painter = painterResource(id = R.drawable.background),
-                contentScale = ContentScale.FillBounds
-            )
-            .padding(20.dp)) {
-
-            GameInfoRow(lives = 3, timeRemaining = 60, scoreNumber = 0)
-            Column(modifier
-                .fillMaxWidth()
-                .height(150.dp)
-            ) {
-                GameWindow(
-                    firstGame = true,
-                    lives = 3,
-                    first = 1,
-                    second = 2,
-                    isPlaying = true,
-                    modifier = Modifier.weight(1f),
-                    onPlayClicked = {}
-                )
-            }
-
-            Column(modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally) {
-                Box(
-                    modifier = Modifier
-                        .size(300.dp)
-                        .background(Color.Transparent)
-                )
-            }
-
-            Button(onClick = {}) {
-                Text("Home")
-            }
-        }
-    }
-}
