@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -65,33 +66,26 @@ fun PracticeScreen(gameViewModel: GameViewModel?) {
     Column(modifier = Modifier
         .fillMaxSize()
         .background(colorScheme.primary)
-        .padding(8.dp)) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(colorScheme.background, RoundedCornerShape(8.dp))
-            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-            .padding(8.dp)
-        ) {
-            Text("Practice",
-                style = typography.titleLarge,
-                color = colorScheme.onPrimary)
-        }
-        Spacer(modifier = Modifier.height(8.dp))
+        .padding(horizontal = 8.dp)) {
+
+
+        Spacer(modifier = Modifier.height(16.dp))
         PracticeCalculate(
-            gameViewModel = gameViewModel,
             firstNumber = tableNumber,
             secondNumber = secondNumber,
             correct = correct,
             wrong = wrong,
         )
 
-            Row(modifier = Modifier.fillMaxWidth().padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly) {
+        Spacer(modifier = Modifier.height(8.dp))
+            Row(modifier = Modifier.fillMaxWidth()
+                .background(colorScheme.background, RoundedCornerShape(8.dp)).padding(horizontal = 20.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween) {
                 numberList.forEach { index ->
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier
-                        .background(Color.Transparent, CircleShape)
+                        .background(colorScheme.primary, CircleShape)
                         .border(2.dp, colorScheme.surface, CircleShape)
                         .size(60.dp)
                         .clickable(onClick = {
@@ -103,13 +97,13 @@ fun PracticeScreen(gameViewModel: GameViewModel?) {
                                 gameViewModel?.calculateWithTable(tableNumber)
                             }
                         })) {
-                        Text("$index")
+                        Text("$index", color = colorScheme.onPrimary)
                     }
 
 
                 }
             }
-
+        Spacer(modifier = Modifier.height(4.dp))
         EditButton(
             title = if (!isTableVisible) "Show tables" else "Close tables",
             onClick = { isTableVisible = !isTableVisible },
@@ -137,87 +131,105 @@ fun PracticeScreen(gameViewModel: GameViewModel?) {
 
 @Composable
 fun PracticeCalculate(
-    gameViewModel: GameViewModel?,
     firstNumber: Int,
     secondNumber: Int,
     correct: Int = 0,
     wrong: Int = 0) {
-
-    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-        Column(modifier = Modifier
-            .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-            Box(
+    Column(modifier = Modifier
+        .background(colorScheme.background, RoundedCornerShape(8.dp))
+        .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+        .padding(16.dp)) {
+        Row(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+            Column(
                 modifier = Modifier
-                    .size(120.dp)
-                    .background(colorScheme.background, RoundedCornerShape(8.dp))
-                    .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-                    .padding(8.dp)) {
-                Column(modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "Correct",
-                        color = colorScheme.onBackground,
-                        style = typography.titleSmall
-                    )
-                    Text(
-                        "$correct",
-                        color = colorScheme.onBackground,
-                        style = typography.headlineLarge,
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .background(colorScheme.secondary, RoundedCornerShape(8.dp))
+                        .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+                        .padding(8.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "Correct",
+                            color = colorScheme.onBackground,
+                            style = typography.titleSmall
+                        )
+                        Text(
+                            "$correct",
+                            color = colorScheme.onBackground,
+                            style = typography.headlineLarge,
 
-                    )
+                            )
 
+                    }
                 }
-            }
 
-        }
-        Column(modifier = Modifier
-            .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
                 Box(
                     modifier = Modifier
-                        .size(120.dp)
+                        .wrapContentSize()
                         .background(colorScheme.error, RoundedCornerShape(8.dp))
                         .border(2.dp, colorScheme.errorContainer, RoundedCornerShape(8.dp))
                         .padding(8.dp)
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        "Wrong",
-                        color = colorScheme.onError,
-                        style = typography.titleSmall
-                    )
-                    Text("$wrong",
-                        color = colorScheme.onError,
-                        style = typography.headlineLarge)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            "Wrong",
+                            color = colorScheme.onError,
+                            style = typography.titleSmall
+                        )
+                        Text(
+                            "$wrong",
+                            color = colorScheme.onError,
+                            style = typography.headlineLarge
+                        )
+                    }
                 }
             }
+
+
         }
-
-
-    }
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .background(colorScheme.primary, RoundedCornerShape(8.dp))
-        .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-        .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Text(
-            "$firstNumber",
-            style = typography.titleLarge,
-            color = colorScheme.onPrimary
-        )
-        Text("*",
-            style = typography.titleLarge,
-            color = colorScheme.onPrimary)
-        Text(
-            "$secondNumber",
-            style = typography.titleLarge,
-            color = colorScheme.onPrimary
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorScheme.primary, RoundedCornerShape(8.dp))
+                .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                "$firstNumber",
+                style = typography.titleLarge,
+                color = colorScheme.onPrimary
+            )
+            Text(
+                "*",
+                style = typography.titleLarge,
+                color = colorScheme.onPrimary
+            )
+            Text(
+                "$secondNumber",
+                style = typography.titleLarge,
+                color = colorScheme.onPrimary
+            )
+        }
     }
 
 }

@@ -9,7 +9,7 @@ import com.example.nuerd.models.HighScoreEntry
 fun HomeScreen(authState: AuthState? = null, userState: User?, allHighScores: List<HighScoreEntry>, userHighScore: Int ) {
 
         if (authState is AuthState.Authenticated) {
-            Start(user = userState?.username.toString() ?: "Guest", allHighScores = allHighScores, userHighScore = userHighScore)
+            Start(user = userState?.username.toString(), allHighScores = allHighScores, userHighScore = userHighScore)
         } else {
             Welcome(allHighScores = allHighScores)
         }

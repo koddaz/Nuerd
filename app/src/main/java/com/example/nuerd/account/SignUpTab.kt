@@ -45,6 +45,14 @@ import com.example.nuerd.models.Flags
 import com.example.nuerd.models.Name
 import com.example.nuerd.models.getCountriesViewModel
 import com.example.nuerd.ui.theme.NuerdTheme
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 
 @Composable
 fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, authViewModel: AuthViewModel?, navOnLogin: () -> Unit) {
@@ -53,6 +61,10 @@ fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, a
     var username by remember { mutableStateOf("") }
     var country by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
+
+    val usernameFocus = remember { FocusRequester() }
+    val emailFocus = remember { FocusRequester() }
+    val passwordFocus = remember { FocusRequester() }
 
     val countries = countriesList
     val scrollState = rememberScrollState()
@@ -65,24 +77,46 @@ fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, a
         }
     }
 
-    Column(modifier = Modifier.background(colorScheme.secondary).padding(8.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(colorScheme.secondary)
+            .padding(8.dp)
+            .imePadding()
+
+    ) {
         CustomTextField(
+            modifier = Modifier.focusRequester(usernameFocus),
             onValueChange = { username = it },
             label = "Username",
             value = username,
-            keyboardType = KeyboardType.Text
+            keyboardType = KeyboardType.Text,
+            onImeAction = { emailFocus.requestFocus() },
+            imeAction = ImeAction.Next
         )
+
         CustomTextField(
             onValueChange = { email = it },
             label = "E-mail",
             value = email,
-            keyboardType = KeyboardType.Email
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next,
+            onImeAction = { passwordFocus.requestFocus() },
+            modifier = Modifier.focusRequester(emailFocus)
         )
+
         CustomTextField(
             onValueChange = { password = it },
             label = "Password",
             value = password,
-            keyboardType = KeyboardType.Password
+            keyboardType = KeyboardType.Password,
+            visual = PasswordVisualTransformation(),
+            imeAction = ImeAction.Done,
+            onImeAction = {
+                authViewModel?.signUp(email, password, username, country)
+                navOnLogin()
+            },
+            modifier = Modifier.focusRequester(passwordFocus)
         )
 
         Box {
@@ -135,7 +169,7 @@ fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, a
                                     .fillMaxWidth()
                                     .padding(vertical = 8.dp, horizontal = 8.dp)
                                     .clickable {
-                                        country = countryItem.name.common ?: ""
+                                        country = countryItem.name.common
                                         expanded = false
                                     },
                                 verticalAlignment = Alignment.CenterVertically
@@ -146,7 +180,7 @@ fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, a
                                     modifier = Modifier.size(24.dp)
                                 )
                                 Text(
-                                    text = countryItem.name.common ?: "",
+                                    text = countryItem.name.common,
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(start = 8.dp),
                                     color = colorScheme.onPrimary

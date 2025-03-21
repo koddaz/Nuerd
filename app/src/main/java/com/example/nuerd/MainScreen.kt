@@ -1,5 +1,6 @@
 package com.example.nuerd
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -7,16 +8,22 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -38,19 +45,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nuerd.account.AccountScreen
-import com.example.nuerd.account.LogIn
-import com.example.nuerd.account.SignUp
 import com.example.nuerd.game.GameScreen
 import com.example.nuerd.menu.Menu
 import com.example.nuerd.models.AuthState
 import com.example.nuerd.models.AuthViewModel
 import com.example.nuerd.models.GameViewModel
-import com.example.nuerd.models.HighScoreEntry
 import com.example.nuerd.models.HighScoreViewModel
 import com.example.nuerd.models.ThemeViewModel
 import com.example.nuerd.models.User
@@ -58,9 +63,10 @@ import com.example.nuerd.models.getCountriesViewModel
 import com.example.nuerd.practie.PracticeScreen
 import com.example.nuerd.settings.SettingsScreen
 import com.example.nuerd.startscreen.HomeScreen
-import com.example.nuerd.ui.theme.NuerdTheme
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.example.nuerd.models.CustomTopBar
+
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,19 +76,18 @@ fun MainScreen(
     themeViewModel: ThemeViewModel? = null,
     authViewModel: AuthViewModel? = viewModel(),
     gameViewModel: GameViewModel? = viewModel(),
-    padding: PaddingValues = PaddingValues(0.dp)
 ) {
     val authState by authViewModel?.authState?.collectAsState() ?: remember { mutableStateOf(null) }
     val userState = remember { mutableStateOf<User?>(null) }
 
     var menuChoice by remember { mutableStateOf(1) }
     var isMenuVisible by remember { mutableStateOf(false) }
-    
+    var title by remember { mutableStateOf("") }
+
     val countriesList = getCountries?.countries?.observeAsState()
 
     val allHighScores by highScoreViewModel.allHighScores.collectAsState()
     val userHighScore by highScoreViewModel.userHighScore.collectAsState()
-
 
     LaunchedEffect(Unit) {
         getCountries?.loadCountries()
@@ -98,8 +103,13 @@ fun MainScreen(
             }
         }
     }
+Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold (
 
-    Column(modifier = Modifier.fillMaxSize()) {
+        topBar = {
+            CustomTopBar(menuChoice = menuChoice)
+        }
+    ) { padding ->
 
         Box(
             modifier = Modifier
@@ -108,9 +118,7 @@ fun MainScreen(
                 .background(colorScheme.primary)
         ) {
             // Main content
-            Column(modifier = Modifier.fillMaxSize()) {
-                // Screen content
-                Box(modifier = Modifier.weight(1f)) {
+
                     when (menuChoice) {
                         1 -> HomeScreen(
                             authState = authState,
@@ -126,8 +134,10 @@ fun MainScreen(
                         3 -> AccountScreen(
                             authViewModel = authViewModel,
                             userState = userState.value,
-                            onButtonClick = { authViewModel?.signOut()
-                                menuChoice = 1 }
+                            onButtonClick = {
+                                authViewModel?.signOut()
+                                menuChoice = 1
+                            }
                         )
 
                         4 -> GameScreen(
@@ -136,7 +146,7 @@ fun MainScreen(
                         )
 
                         5 -> SettingsScreen(
-                            onButtonClick = {  },
+                            onButtonClick = { },
                             gameViewModel = gameViewModel,
                             themeViewModel = themeViewModel
                         )
@@ -144,17 +154,19 @@ fun MainScreen(
                 }
 
                 // Bottom navigation
-                Row(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp, end = 16.dp),
-                    horizontalArrangement = Arrangement.End,
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .padding(end = 24.dp, bottom = 24.dp),
+                    contentAlignment = Alignment.BottomEnd
                 ) {
                     Box(
                         modifier = Modifier
                             .size(60.dp)
-                            //.background(colorScheme.surface, shape = CircleShape)
-                            .border(3.dp, colorScheme.surface, shape = CircleShape)
+
+                            .background(colorScheme.primary, CircleShape)
+                            .border(3.dp, colorScheme.surface, CircleShape)
                             .clickable { isMenuVisible = true },
                         contentAlignment = Alignment.Center
                     ) {
@@ -165,7 +177,9 @@ fun MainScreen(
                         )
                     }
                 }
-            }
+                }
+
+        }
 
             // Menu overlay
             if (isMenuVisible) {
@@ -173,25 +187,27 @@ fun MainScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(colorScheme.primary.copy(alpha = 0.9f))
                         .zIndex(5f)
-                        .clickable { isMenuVisible = false }
+                        .clickable { isMenuVisible = false },
                 )
 
                 // Menu content layer (needs to stop click propagation)
                 Box(
                     modifier = Modifier
+                        .fillMaxSize()
                         .zIndex(10f)
-                        .background(colorScheme.primary)
                         .padding(20.dp),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.Center,
                 ) {
                     // Wrapper to prevent click propagation
                     Box(
                         modifier = Modifier
+                            .wrapContentSize()
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = null
-                            ) { /* Intercept clicks to prevent them from reaching background */ }
+                            ) { /* Intercept clicks */ }
                     ) {
                         Menu(
                             countries = countriesList?.value,
@@ -201,11 +217,11 @@ fun MainScreen(
                                 isMenuVisible = false
                             },
                             onSettingsClick = {
-                                menuChoice = 5  // Fixed to match SettingsScreen case
+                                menuChoice = 5
                                 isMenuVisible = false
                             },
                             onAccountClick = {
-                                menuChoice = 3  // Fixed to match AccountScreen case
+                                menuChoice = 3
                                 isMenuVisible = false
                             },
                             onSignClick = {
@@ -224,16 +240,7 @@ fun MainScreen(
                 }
             }
         }
-    }
-}
 
 
-@Preview
-@Composable
-fun MainScreenPreview() {
 
-    NuerdTheme {
-        MainScreen(authViewModel = null, gameViewModel = null, getCountries = null)
-    }
-}
 

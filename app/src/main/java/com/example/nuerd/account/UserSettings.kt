@@ -39,18 +39,7 @@ fun UserSettings(
         modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(16.dp)
     ) {
         if (!isCancelVisible && !isEditVisible) {
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .background(colorScheme.background, RoundedCornerShape(8.dp))
-                .border(width = 2.dp, color = colorScheme.surface, RoundedCornerShape(8.dp))
-                .padding(16.dp)) {
-                Text(
-                    "Account info:",
-                    style = typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = colorScheme.onPrimary
-                )
-            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Column(
                 modifier = Modifier
@@ -61,9 +50,9 @@ fun UserSettings(
             ) {
 
                 if (user != null) {
-                    Text("Username: \n ${user.username ?: "N/A"}", color = colorScheme.onPrimary)
-                    Text("Email: \n ${user.email ?: "N/A"}", color = colorScheme.onPrimary)
-                    Text("Country: \n ${user.country ?: "N/A"}", color = colorScheme.onPrimary)
+                    Text("Username: \n ${user.username}", color = colorScheme.onPrimary)
+                    Text("Email: \n ${user.email}", color = colorScheme.onPrimary)
+                    Text("Country: \n ${user.country}", color = colorScheme.onPrimary)
                 } else {
                     Text("No user data found.")
                 }

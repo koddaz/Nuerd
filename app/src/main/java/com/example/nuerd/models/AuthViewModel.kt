@@ -63,26 +63,7 @@ open class AuthViewModel: ViewModel() {
 
     }
 
-    open fun highScore(highscore: Int) {
-        val user = auth.currentUser
-        val uid = user?.uid
 
-        if (uid != null) {
-            database.child("Users").child(uid).child("highScore").setValue(highscore)
-        }
-    }
-
-    open fun updateAccount(username: String, email: String, country: String) {
-        val user = auth.currentUser
-        if (user != null) {
-            val userUpdates = hashMapOf<String, Any>(
-                "username" to username,
-                "email" to email,
-                "country" to country
-            )
-            database.child("Users").child(user.uid).updateChildren(userUpdates)
-        }
-    }
 
     open fun updatePassword(
         oldPassword: String,
@@ -153,8 +134,13 @@ open class AuthViewModel: ViewModel() {
     fun signUp(email: String, password: String, username: String, country: String) {
         viewModelScope.launch {
             try {
-                // Perform sign-up and update _authState
-                auth.createUserWithEmailAndPassword(email, password).await()
+                val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+                val uid = authResult.user?.uid
+                if (uid != null) {
+                    databaseAdd(uid, username, email, country)
+                } else {
+                    _authState.value = AuthState.Error("User ID is null")
+                }
                 _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")

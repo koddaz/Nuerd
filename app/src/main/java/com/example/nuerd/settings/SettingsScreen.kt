@@ -59,60 +59,54 @@ fun SettingsScreen(
     val scrollState = rememberScrollState()
 
     Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(16.dp).verticalScroll(scrollState)) {
-        Row(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp))
-        {
-            Text("Settings ", color = colorScheme.onBackground, style = typography.headlineMedium)
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp))
-        {
-            Text(
-                "Sound",
-                color = colorScheme.onBackground,
-                style = typography.titleLarge
-            )
-        }
-        Spacer(modifier = Modifier.height(4.dp))
+
         Column(modifier = Modifier.fillMaxWidth()
             .background(colorScheme.background, RoundedCornerShape(8.dp))
             .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)) {
+            Text(
+                "Volume",
+                color = colorScheme.onBackground,
+                style = typography.bodySmall
+            )
             Spacer(modifier = Modifier.height(16.dp))
-            SliderModel(
-                title = "Music volume $musicVolume",
-                value = musicVolume,
-                enabled = musicEnabled,
-                onValueChange = { musicVolume = it },
-                onCheckedChange = { musicEnabled = it }
-            )
-            SliderModel(
-                title = "Sound volume $soundVolume",
-                value = soundVolume,
-                enabled = soundEnabled,
-                onValueChange = { soundVolume = it },
-                onCheckedChange = { soundEnabled = it }
-            )
+            Column(modifier = Modifier.padding(start = 16.dp)) {
+                SliderModel(
+                    title = "Music $musicVolume",
+                    value = musicVolume,
+                    enabled = musicEnabled,
+                    onValueChange = { musicVolume = it },
+                    onCheckedChange = { musicEnabled = it }
+                )
+                SliderModel(
+                    title = "Effects $soundVolume",
+                    value = soundVolume,
+                    enabled = soundEnabled,
+                    onValueChange = { soundVolume = it },
+                    onCheckedChange = { soundEnabled = it }
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp))
-        {
+
+
+        Column(modifier = Modifier.fillMaxWidth()
+            .background(colorScheme.background, RoundedCornerShape(8.dp))
+            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)) {
             Text(
                 "Difficulty",
                 color = colorScheme.onBackground,
-                style = typography.titleLarge
+                style = typography.bodySmall
             )
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Column(modifier = Modifier.fillMaxWidth()
-            .background(colorScheme.background, RoundedCornerShape(8.dp))
-            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)) {
-
+            Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
 
                     difficulty.forEach { value ->
-                        Column(modifier = Modifier.weight(1f),
-                            horizontalAlignment = Alignment.Start) {
+                        Column(
+                            modifier = Modifier.weight(1f).padding(start = 20.dp),
+                            horizontalAlignment = Alignment.Start
+                        ) {
                             DifficultyModel(
                                 onClick = {
                                     gameViewModel?.setDifficulty(newDifficulty = value)
@@ -127,28 +121,24 @@ fun SettingsScreen(
                                 style = typography.bodySmall
                             )
                         }
-                }
+                    }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp))
-        {
+
+        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)) {
             Text(
                 "Theme",
                 color = colorScheme.onBackground,
-                style = typography.titleLarge
+                style = typography.bodySmall
             )
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)) {
-
-
+            Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly) {
 
                 themeList.forEach { theme ->
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).padding(start = 20.dp),
                         horizontalAlignment = Alignment.Start) {
                     DifficultyModel(
                         onClick = {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,46 +32,43 @@ import com.example.nuerd.ui.theme.NuerdTheme
 
 @Composable
 fun Welcome(allHighScores: List<HighScoreEntry>) {
-    Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary)) {
-        Column(modifier = Modifier.fillMaxWidth().padding(8.dp).background(colorScheme.background).border(2.dp, colorScheme.surface)) {
+    Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(8.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .background(colorScheme.background, RoundedCornerShape(8.dp))
+            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+            .padding(8.dp)) {
 
-            /*
-            Row(modifier = Modifier.padding(bottom = 8.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.nlogo),
-                    contentDescription = "logo"
-                )
-                Text(
-                    "Nuerd!",
-                    style = typography.titleLarge,
-                    color = colorScheme.onBackground,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-
-             */
             Text(
                 "Start your journey to become the greatest Nuerd on the planet here",
                 style = typography.bodyLarge,
                 color = colorScheme.onBackground
             )
-            Column(modifier = Modifier.fillMaxWidth().padding(8.dp).background(colorScheme.background).border(2.dp, colorScheme.surface)) {
-                Text(
-                    "Global Top 5",
-                    style = typography.titleMedium,
-                    color = colorScheme.onBackground,
-                    modifier = Modifier.padding(8.dp)
-                )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .background(colorScheme.background, RoundedCornerShape(8.dp))
+            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+            .padding(8.dp)) {
+            Text("Global Top 5", style = typography.titleMedium, color = colorScheme.onBackground)
 
-                if (allHighScores.isEmpty()) {
-                    Text(
-                        "No high scores yet",
-                        style = typography.bodyMedium,
-                        color = colorScheme.onBackground,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                } else {
-                LazyColumn(modifier = Modifier.height(200.dp)) {
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Column(modifier = Modifier.background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)))
+        {
+            if (allHighScores.isEmpty()) {
+                Text(
+                    "No high scores yet",
+                    style = typography.bodyMedium,
+                    color = colorScheme.onBackground,
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.wrapContentSize().fillMaxWidth()
+                        .background(colorScheme.background)
+                ) {
                     itemsIndexed(allHighScores.take(5)) { index, entry ->
                         Row(
                             modifier = Modifier
@@ -80,19 +78,19 @@ fun Welcome(allHighScores: List<HighScoreEntry>) {
                         ) {
                             Text(
                                 text = "${index + 1}.",
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = typography.bodyMedium,
                                 color = colorScheme.onBackground,
                                 modifier = Modifier.width(32.dp)
                             )
                             Text(
                                 text = entry.username,
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = typography.bodyMedium,
                                 color = colorScheme.onBackground,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(
                                 text = entry.score.toString(),
-                                style = MaterialTheme.typography.bodyMedium,
+                                style = typography.bodyMedium,
                                 color = colorScheme.onBackground
                             )
                         }
@@ -102,12 +100,12 @@ fun Welcome(allHighScores: List<HighScoreEntry>) {
                     }
                 }
             }
-            }
         }
-        }
-
-
     }
+}
+
+
+
 
 
 @Composable
@@ -115,28 +113,14 @@ fun Start(user: String, allHighScores: List<HighScoreEntry>, userHighScore: Int)
 
 
     Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(8.dp)) {
-        /*
-        Row(modifier = Modifier.padding(bottom = 8.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.nlogo),
-                contentDescription = "logo"
-            )
-            Text(
-                "Nuerd!",
-                style = MaterialTheme.typography.headlineLarge,
-                color = colorScheme.onBackground,
-                modifier = Modifier.padding(start = 8.dp)
-            )
-        }
 
-         */
         Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(8.dp)) {
 
-                Text(
-                    "It is nice to see you there $user. Are you ready to take on your Nuerd journey?",
-                    style = typography.bodyMedium,
-                    color = colorScheme.onBackground
-                )
+            Text(
+                "It is nice to see you there $user. Are you ready to take on your Nuerd journey?",
+                style = typography.bodyMedium,
+                color = colorScheme.onBackground
+            )
 
         }
 
@@ -162,7 +146,7 @@ fun Start(user: String, allHighScores: List<HighScoreEntry>, userHighScore: Int)
                 )
             } else {
                 LazyColumn(
-                    modifier = Modifier.height(200.dp).fillMaxWidth()
+                    modifier = Modifier.wrapContentSize().fillMaxWidth()
                         .background(colorScheme.background)
                 ) {
                     itemsIndexed(allHighScores.take(5)) { index, entry ->

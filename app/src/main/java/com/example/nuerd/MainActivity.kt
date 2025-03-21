@@ -51,12 +51,7 @@ class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.light(
-                scrim = Color.Transparent.toArgb(),
-                darkScrim = Color.Transparent.toArgb()
-            )
-        )
+        enableEdgeToEdge()
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
             !themeViewModel.isInitialized.value
@@ -73,29 +68,14 @@ class MainActivity : ComponentActivity() {
             val currentTheme by themeViewModel.theme.collectAsState()
 
             NuerdTheme(theme = currentTheme) {
-                Scaffold(
 
-                    topBar = {
-                        TopAppBar(
-                            title = { Text(text = "Nuerd") },
-                            colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                                containerColor = colorScheme.primary
-                            ),
-                            windowInsets = WindowInsets.statusBars
-                        )
-
-                    },
-
-
-                ) { padding ->
                     MainScreen(
                         gameViewModel = gameViewModel,
                         themeViewModel = themeViewModel,
                         authViewModel = authViewModel,
                         getCountries = getCountries,
-                        padding = padding
                     )
-                }
+
             }
         }
     }

@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="Nuerd">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-03-10T18:36:17.556018Z">
+        <DropdownSelection timestamp="2025-03-19T12:23:04.336199Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=RFCN8035XDL" />

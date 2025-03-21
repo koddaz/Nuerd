@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -19,13 +21,13 @@ fun SliderModel(
     onValueChange: (Int) -> Unit,
     onCheckedChange: (Boolean) -> Unit) {
 
-    Text(title, color = MaterialTheme.colorScheme.onBackground)
+    Text(title, color = colorScheme.onBackground, style = typography.bodySmall)
     Row(modifier = Modifier.fillMaxWidth()) {
         Slider(
             colors = SliderDefaults.colors(
-                thumbColor = MaterialTheme.colorScheme.onBackground,
-                activeTrackColor = MaterialTheme.colorScheme.onBackground,
-                inactiveTrackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                thumbColor = colorScheme.onBackground,
+                activeTrackColor = colorScheme.onBackground,
+                inactiveTrackColor = colorScheme.onBackground.copy(alpha = 0.5f)
             ),
             enabled = enabled,
             value = value.toFloat(),
@@ -35,8 +37,8 @@ fun SliderModel(
         )
         Checkbox(
             colors = CheckboxDefaults.colors(
-                checkedColor = MaterialTheme.colorScheme.onBackground,
-                uncheckedColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+                checkedColor = colorScheme.onBackground,
+                uncheckedColor = colorScheme.onBackground.copy(alpha = 0.5f)
             ),
             checked = enabled,
             onCheckedChange = { onCheckedChange(it) }

@@ -11,10 +11,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.Person
@@ -72,6 +75,7 @@ fun Menu(
         Column(
             modifier
                 .fillMaxWidth()
+                .heightIn(max = 650.dp)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -88,7 +92,8 @@ fun Menu(
                 Column(
                     modifier.fillMaxWidth()
                         .background(colorScheme.background, RoundedCornerShape(8.dp))
-                        .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)
+                        .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+                        .padding(16.dp)
                 ) {
                     Text(
                         text = "Menu",
@@ -133,12 +138,17 @@ fun Menu(
                             })
                         )
                     }
-                    Column() {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(250.dp) // Fixed height for the scrollable form area
+                            .verticalScroll(rememberScrollState())
+                    ) {
                         if (showSignIn) {
                             LogIn(
                                 authViewModel = authViewModel,
                                 navOnLogin = {
-                                    onSignClick
+                                    onSignClick()
                                     toggleMenu()
                                 }
                             )

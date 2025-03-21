@@ -4,20 +4,21 @@
     <style name="Theme.Splash" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/splash</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/nlogo</item>
-        <item name="postSplashScreenTheme">@style/Theme.Nuerd</item>
+        <item name="postSplashScreenTheme">@style/Theme.Nuerd.NoActionBar</item>
+
+    </style>
+
+    <style name="Theme.Nuerd" parent="Theme.Material3.DayNight">
+        <!-- Base application theme attributes -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
-    <style name="Theme.Nuerd" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Make status bar transparent -->
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentStatus">false</item>
+    <style name="Theme.Nuerd.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
-        <item name="android:windowLightStatusBar">true</item>
-
     </style>
+
 </resources>

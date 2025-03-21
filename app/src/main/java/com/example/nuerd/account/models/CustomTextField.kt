@@ -24,6 +24,12 @@ import androidx.compose.ui.unit.dp
 import com.example.nuerd.ui.theme.borderColor
 import com.example.nuerd.ui.theme.cursorColor
 import com.example.nuerd.ui.theme.errorColor
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.MaterialTheme.typography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,7 +38,10 @@ fun CustomTextField(
     label: String,
     onValueChange: (String) -> Unit,
     keyboardType: KeyboardType,
-    visual: VisualTransformation = VisualTransformation.None
+    visual: VisualTransformation = VisualTransformation.None,
+    imeAction: ImeAction = ImeAction.Next,
+    onImeAction: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     Column(modifier = Modifier.padding(vertical = 8.dp)) {
         var text by remember { mutableStateOf(value) }
@@ -43,8 +52,15 @@ fun CustomTextField(
                 text = it
                 onValueChange(it)
             },
-            label = { Text(label, color = colorScheme.onSecondary) },
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            label = { Text(label, color = colorScheme.onSecondary, style = typography.bodySmall) },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = keyboardType,
+                imeAction = imeAction
+            ),
+            keyboardActions = KeyboardActions(
+                onNext = { onImeAction() },
+                onDone = { onImeAction() }
+            ),
             colors = TextFieldDefaults.textFieldColors(
                 containerColor = colorScheme.secondary,
                 disabledTextColor = Color.Gray,
@@ -55,10 +71,10 @@ fun CustomTextField(
                 disabledIndicatorColor = Color.Transparent,
                 errorIndicatorColor = colorScheme.error
             ),
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
+            shape = RoundedCornerShape(8.dp),
+            modifier = modifier
                 .fillMaxWidth()
-                .border(width = 3.dp, color = colorScheme.onPrimary, shape = RoundedCornerShape(16.dp))
+                .border(width = 3.dp, color = colorScheme.surface, shape = RoundedCornerShape(8.dp))
         )
     }
 }
