@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Splash screen theme -->
-    <style name="Theme.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/splash</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/nlogo</item>
-        <item name="postSplashScreenTheme">@style/Theme.Nuerd.NoActionBar</item>
 
-    </style>
 
     <style name="Theme.Nuerd" parent="Theme.Material3.DayNight">
         <!-- Base application theme attributes -->
@@ -19,6 +13,15 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <style name="Theme.Nuerd.SplashScreen" parent="Theme.SplashScreen">
+        <!-- Make system splash screen transparent/invisible -->
+        <item name="windowSplashScreenBackground">@android:color/transparent</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+        <item name="windowSplashScreenAnimationDuration">0</item>
+        <!-- Your regular theme -->
+        <item name="postSplashScreenTheme">@style/Theme.Nuerd.NoActionBar</item>
     </style>
 
 </resources>

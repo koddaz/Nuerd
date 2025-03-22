@@ -39,6 +39,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -65,13 +67,13 @@ import com.example.nuerd.settings.SettingsScreen
 import com.example.nuerd.startscreen.HomeScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.example.nuerd.models.CustomTopBar
-
+import com.example.nuerd.ui.theme.NuerdTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
-    highScoreViewModel: HighScoreViewModel = viewModel(),
+    highScoreViewModel: HighScoreViewModel? = viewModel(),
     getCountries: getCountriesViewModel? = viewModel(),
     themeViewModel: ThemeViewModel? = null,
     authViewModel: AuthViewModel? = viewModel(),
@@ -80,14 +82,14 @@ fun MainScreen(
     val authState by authViewModel?.authState?.collectAsState() ?: remember { mutableStateOf(null) }
     val userState = remember { mutableStateOf<User?>(null) }
 
-    var menuChoice by remember { mutableStateOf(1) }
+    var menuChoice by remember { mutableIntStateOf(1) }
     var isMenuVisible by remember { mutableStateOf(false) }
     var title by remember { mutableStateOf("") }
 
     val countriesList = getCountries?.countries?.observeAsState()
 
-    val allHighScores by highScoreViewModel.allHighScores.collectAsState()
-    val userHighScore by highScoreViewModel.userHighScore.collectAsState()
+    val allHighScores by highScoreViewModel?.allHighScores?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val userHighScore by highScoreViewModel?.userHighScore?.collectAsState()  ?: remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
         getCountries?.loadCountries()
@@ -107,7 +109,7 @@ Box(modifier = Modifier.fillMaxSize()) {
     Scaffold (
 
         topBar = {
-            CustomTopBar(menuChoice = menuChoice)
+            CustomTopBar(menuChoice = menuChoice, goHome = { menuChoice = 1 })
         }
     ) { padding ->
 
@@ -158,12 +160,12 @@ Box(modifier = Modifier.fillMaxSize()) {
                     modifier = Modifier
                         .fillMaxSize()
                         .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(end = 24.dp, bottom = 24.dp),
+                        .padding(end = 24.dp, bottom = 12.dp),
                     contentAlignment = Alignment.BottomEnd
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(60.dp)
+                            .size(50.dp)
 
                             .background(colorScheme.primary, CircleShape)
                             .border(3.dp, colorScheme.surface, CircleShape)
@@ -243,4 +245,16 @@ Box(modifier = Modifier.fillMaxSize()) {
 
 
 
-
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    NuerdTheme {
+        MainScreen(
+            gameViewModel = null,
+            authViewModel = null,
+            themeViewModel = null,
+            highScoreViewModel = null,
+            getCountries = null
+        )
+    }
+    }

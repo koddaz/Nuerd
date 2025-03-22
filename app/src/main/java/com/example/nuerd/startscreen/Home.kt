@@ -55,7 +55,7 @@ fun Welcome(allHighScores: List<HighScoreEntry>) {
 
         }
         Spacer(modifier = Modifier.height(4.dp))
-        Column(modifier = Modifier.background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)))
+        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)))
         {
             if (allHighScores.isEmpty()) {
                 Text(

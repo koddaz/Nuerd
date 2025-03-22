@@ -22,7 +22,6 @@ fun AccountScreen(
 ) {
     Column(
         modifier.fillMaxSize().background(colorScheme.background),
-        verticalArrangement = Arrangement.Center
     ) {
 
         UserSettings(

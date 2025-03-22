@@ -21,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,7 +37,7 @@ fun UserSettings(
     var isCancelVisible by remember { mutableStateOf(false) }
     var isEditVisible by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(16.dp)
+        modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(8.dp)
     ) {
         if (!isCancelVisible && !isEditVisible) {
 
@@ -48,13 +49,30 @@ fun UserSettings(
                     .border(width = 2.dp, color = colorScheme.surface, RoundedCornerShape(8.dp))
                     .padding(16.dp)
             ) {
-
-                if (user != null) {
-                    Text("Username: \n ${user.username}", color = colorScheme.onPrimary)
-                    Text("Email: \n ${user.email}", color = colorScheme.onPrimary)
-                    Text("Country: \n ${user.country}", color = colorScheme.onPrimary)
-                } else {
-                    Text("No user data found.")
+                Text("User information", style = typography.bodySmall, color = colorScheme.onBackground)
+                Column(
+                    modifier = Modifier.padding(start = 20.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    if (user != null) {
+                        Text(
+                            "Username: ${user.username}",
+                            color = colorScheme.onPrimary,
+                            style = typography.bodySmall
+                        )
+                        Text(
+                            "Email: ${user.email}",
+                            color = colorScheme.onPrimary,
+                            style = typography.bodySmall
+                        )
+                        Text(
+                            "Country: ${user.country}",
+                            color = colorScheme.onPrimary,
+                            style = typography.bodySmall
+                        )
+                    } else {
+                        Text("No user data found.")
+                    }
                 }
             }
         }

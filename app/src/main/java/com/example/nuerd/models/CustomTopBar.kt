@@ -3,6 +3,7 @@ package com.example.nuerd.models
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -16,6 +17,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
@@ -30,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nuerd.R
 
 @Composable
-fun CustomTopBar(menuChoice: Int) {
+fun CustomTopBar(menuChoice: Int, goHome: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -76,6 +81,16 @@ fun CustomTopBar(menuChoice: Int) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            if (menuChoice != 1) {
+                IconButton(onClick = goHome) {
+                    Icon(
+                        Icons.Default.Home,
+                        contentDescription = "Home",
+                        tint = colorScheme.onSurface
+                    )
+                }
+            }
+
         }
     }
 }

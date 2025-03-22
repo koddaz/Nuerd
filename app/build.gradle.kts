@@ -45,7 +45,7 @@ android {
         compose = true
     }
     room {
-        schemaDirectory("schemas")
+        schemaDirectory("$projectDir/schemas")
     }
 }
 

@@ -24,6 +24,9 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.material3.TopAppBarDefaults.windowInsets
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
@@ -37,25 +40,22 @@ import com.example.nuerd.models.GameViewModelFactory
 import com.example.nuerd.models.ThemeViewModel
 import com.example.nuerd.models.ThemeViewModelFactory
 import com.example.nuerd.models.getCountriesViewModel
+import com.example.nuerd.splash.CustomSplashScreen
 import com.example.nuerd.ui.theme.NuerdTheme
 import kotlin.getValue
 
 
 class MainActivity : ComponentActivity() {
-    private val themeViewModel: ThemeViewModel by viewModels {
-        val application = application as Application
-        val settingsDao = AppDatabase.getDatabase(application).settingsDao()
-        ThemeViewModelFactory(settingsDao)
-    }
+
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splashScreen = installSplashScreen()
+        splashScreen.setKeepOnScreenCondition { false }
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition {
-            !themeViewModel.isInitialized.value
-        }
+
         setContent {
             val themeViewModel: ThemeViewModel = viewModel(
                 factory = ThemeViewModelFactory(
@@ -68,14 +68,24 @@ class MainActivity : ComponentActivity() {
             val currentTheme by themeViewModel.theme.collectAsState()
 
             NuerdTheme(theme = currentTheme) {
+                var showSplash by remember { mutableStateOf(true) }
 
+                if (showSplash
+
+                    ) {
+                    CustomSplashScreen(
+                        onSplashScreenFinished = {
+                            showSplash = false
+                        }
+                    )
+                } else {
                     MainScreen(
                         gameViewModel = gameViewModel,
                         themeViewModel = themeViewModel,
                         authViewModel = authViewModel,
                         getCountries = getCountries,
                     )
-
+                }
             }
         }
     }
