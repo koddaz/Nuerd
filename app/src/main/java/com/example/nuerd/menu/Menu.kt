@@ -29,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,24 +59,18 @@ fun Menu(
     countries: List<Country>?,
     authViewModel: AuthViewModel?,
     modifier: Modifier = Modifier,
-    onPracticeClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onAccountClick: () -> Unit,
-    onSignClick: () -> Unit,
-    onPlayClick: () -> Unit,
     authenticated: Boolean,
-    toggleMenu: () -> Unit
+    onClick: (Int) -> Unit,
 ) {
 
     var showSignIn by remember { mutableStateOf(true) }
 
     Column(
-        modifier.background(colorScheme.primary).wrapContentSize()
+        modifier.wrapContentSize()
     ) {
         Column(
             modifier
                 .fillMaxWidth()
-                .heightIn(max = 650.dp)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -97,7 +92,7 @@ fun Menu(
                 ) {
                     Text(
                         text = "Menu",
-                        style = MaterialTheme.typography.displaySmall,
+                        style = typography.displaySmall,
                         color = colorScheme.onPrimary,
                     )
                 }
@@ -113,7 +108,7 @@ fun Menu(
                         Text(
                             text = "To be able to use the full content of the game you will have to sign up or log in.",
                             color = colorScheme.onPrimary,
-                            style = MaterialTheme.typography.bodySmall
+                            style = typography.bodySmall
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
@@ -127,12 +122,12 @@ fun Menu(
                         Text(
                             if (showSignIn) "Don't have an account?" else "Already have an account?",
                             color = colorScheme.onPrimary,
-                            style = MaterialTheme.typography.bodySmall
+                            style = typography.bodySmall
                         )
                         Text(
                             if (showSignIn) "Sign up here" else "Sign in here",
                             color = colorScheme.onPrimary,
-                            style = MaterialTheme.typography.bodySmall,
+                            style = typography.bodySmall,
                             modifier = Modifier.clickable(onClick = {
                                 showSignIn = !showSignIn
                             })
@@ -140,16 +135,14 @@ fun Menu(
                     }
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(250.dp) // Fixed height for the scrollable form area
+                            .wrapContentSize()
                             .verticalScroll(rememberScrollState())
                     ) {
                         if (showSignIn) {
                             LogIn(
                                 authViewModel = authViewModel,
                                 navOnLogin = {
-                                    onSignClick()
-                                    toggleMenu()
+                                    onClick(1)
                                 }
                             )
                         } else {
@@ -157,8 +150,7 @@ fun Menu(
                                 countriesList = countries,
                                 authViewModel = authViewModel,
                                 navOnLogin = {
-                                    onSignClick
-                                    toggleMenu()
+                                    onClick(1)
                                 },
                                 getCountries = getCountries
                             )
@@ -173,26 +165,26 @@ fun Menu(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 EditButton(
-                    onClick = onPlayClick,
+                    onClick = { onClick(4) },
                     title = "Play",
                     icon = Icons.Filled.PlayArrow
                 )
                 if (authenticated) {
                     EditButton(
                         modifier = Modifier,
-                        onClick = onPracticeClick,
+                        onClick =  { onClick(2) },
                         title = "Practice",
                         icon = Icons.Filled.Calculate
                     )
                     EditButton(
                         modifier = Modifier,
-                        onClick = onAccountClick,
+                        onClick = { onClick(3) },
                         title = "Profile",
                         icon = Icons.Filled.Person
                     )
                     EditButton(
                         modifier = Modifier,
-                        onClick = onSettingsClick,
+                        onClick =  { onClick(5) },
                         title = "Settings",
                         icon = Icons.Filled.Settings
                     )
@@ -211,16 +203,12 @@ fun Menu(
 fun HomeScreenPreview() {
     NuerdTheme(theme = "Green") {
         Menu(
-            onPracticeClick = {},
-            onSettingsClick = {},
-            onAccountClick = {},
-            onSignClick = {},
+
             authenticated = true,
-            onPlayClick = {},
             authViewModel = null,
             countries = null,
             getCountries = viewModel(),
-            toggleMenu = {}
+            onClick = {}
 
         )
     }

@@ -1,39 +1,24 @@
 package com.example.nuerd
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,14 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.nuerd.account.AccountScreen
+import com.example.nuerd.account.UserSettings
 import com.example.nuerd.game.GameScreen
 import com.example.nuerd.menu.Menu
 import com.example.nuerd.models.AuthState
@@ -84,7 +66,6 @@ fun MainScreen(
 
     var menuChoice by remember { mutableIntStateOf(1) }
     var isMenuVisible by remember { mutableStateOf(false) }
-    var title by remember { mutableStateOf("") }
 
     val countriesList = getCountries?.countries?.observeAsState()
 
@@ -133,22 +114,20 @@ Box(modifier = Modifier.fillMaxSize()) {
                             gameViewModel = gameViewModel,
                         )
 
-                        3 -> AccountScreen(
+                        3 -> UserSettings(
                             authViewModel = authViewModel,
                             userState = userState.value,
                             onButtonClick = {
                                 authViewModel?.signOut()
                                 menuChoice = 1
-                            }
+                            },
                         )
 
                         4 -> GameScreen(
                             gameViewModel = gameViewModel,
-                            onButtonClick = {}
                         )
 
                         5 -> SettingsScreen(
-                            onButtonClick = { },
                             gameViewModel = gameViewModel,
                             themeViewModel = themeViewModel
                         )
@@ -214,29 +193,12 @@ Box(modifier = Modifier.fillMaxSize()) {
                         Menu(
                             countries = countriesList?.value,
                             authViewModel = authViewModel,
-                            onPracticeClick = {
-                                menuChoice = 2
+                            onClick = { choice ->
+                                menuChoice = choice
                                 isMenuVisible = false
-                            },
-                            onSettingsClick = {
-                                menuChoice = 5
-                                isMenuVisible = false
-                            },
-                            onAccountClick = {
-                                menuChoice = 3
-                                isMenuVisible = false
-                            },
-                            onSignClick = {
-                                menuChoice = 1
-                                isMenuVisible = false
-                            },
-                            onPlayClick = {
-                                isMenuVisible = false
-                                menuChoice = 4
                             },
                             authenticated = authState is AuthState.Authenticated,
                             getCountries = getCountries!!,
-                            toggleMenu = { isMenuVisible = !isMenuVisible }
                         )
                     }
                 }

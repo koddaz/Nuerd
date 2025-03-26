@@ -20,16 +20,11 @@ import kotlinx.coroutines.tasks.await
 data class User(
     val username: String = "",
     val email: String = "",
-    val password: String = "",
     val country: String = "",
     val id: String = ""
 )
 
-
-
-
 open class AuthViewModel: ViewModel() {
-
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val database = Firebase.database.reference
 
@@ -41,29 +36,25 @@ open class AuthViewModel: ViewModel() {
     }
 
     open fun checkAuthStatus() {
-
-            viewModelScope.launch {
-                val isAuthenticated = FirebaseAuth.getInstance().currentUser != null
-                _authState.value =
-                    if (isAuthenticated) AuthState.Authenticated else AuthState.Unauthenticated
-            }
-
+        viewModelScope.launch {
+            _authState.value = if (auth.currentUser != null)
+                AuthState.Authenticated
+            else
+                AuthState.Unauthenticated
+        }
     }
 
     fun signIn(email: String, password: String) {
-
-            viewModelScope.launch {
-                try {
-                    FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password).await()
-                    _authState.value = AuthState.Authenticated
-                } catch (e: Exception) {
-                    _authState.value = AuthState.Error(e.message ?: "Unknown error")
-                }
+        _authState.value = AuthState.Loading
+        viewModelScope.launch {
+            try {
+                auth.signInWithEmailAndPassword(email, password).await()
+                _authState.value = AuthState.Authenticated
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
-
+        }
     }
-
-
 
     open fun updatePassword(
         oldPassword: String,
@@ -71,8 +62,8 @@ open class AuthViewModel: ViewModel() {
         onResult: (Boolean, String?) -> Unit
     ) {
         val user = auth.currentUser
-        if (user != null) {
-            val credential = EmailAuthProvider.getCredential(user.email!!, oldPassword)
+        if (user != null && user.email != null) {
+            val credential = EmailAuthProvider.getCredential(user.email.toString(), oldPassword)
             user.reauthenticate(credential).addOnCompleteListener { reauthTask ->
                 if (reauthTask.isSuccessful) {
                     user.updatePassword(newPassword).addOnCompleteListener { updateTask ->
@@ -91,14 +82,28 @@ open class AuthViewModel: ViewModel() {
         }
     }
 
-    open fun deleteAccount() {
+    open fun deleteAccount(onResult: (Boolean, String?) -> Unit = { _, _ -> }) {
         val user = auth.currentUser
         val uid = user?.uid
         if (uid != null) {
             database.child("Users").child(uid).removeValue()
-            auth.currentUser?.delete()
+                .addOnCompleteListener { dbTask ->
+                    if (dbTask.isSuccessful) {
+                        user.delete().addOnCompleteListener { authTask ->
+                            if (authTask.isSuccessful) {
+                                _authState.value = AuthState.Unauthenticated
+                                onResult(true, null)
+                            } else {
+                                onResult(false, authTask.exception?.message)
+                            }
+                        }
+                    } else {
+                        onResult(false, dbTask.exception?.message)
+                    }
+                }
         } else {
             Log.e("Firebase", "User UID is null")
+            onResult(false, "User UID is null")
         }
     }
 
@@ -107,9 +112,9 @@ open class AuthViewModel: ViewModel() {
             username = username,
             email = email,
             country = country,
-            id = "preview-user-id",
+            id = uid
         )
-        database.child("Users").child(uid).setValue(newUser) // Store by user UID
+        database.child("Users").child(uid).setValue(newUser)
     }
 
     open fun databaseGet(userId: String, onResult: (User?) -> Unit) {
@@ -132,22 +137,22 @@ open class AuthViewModel: ViewModel() {
     }
 
     fun signUp(email: String, password: String, username: String, country: String) {
+        _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                 val uid = authResult.user?.uid
                 if (uid != null) {
                     databaseAdd(uid, username, email, country)
+                    _authState.value = AuthState.Authenticated
                 } else {
                     _authState.value = AuthState.Error("User ID is null")
                 }
-                _authState.value = AuthState.Authenticated
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Unknown error")
             }
         }
     }
-
 
     open fun signOut() {
         viewModelScope.launch {
@@ -166,5 +171,5 @@ sealed class AuthState {
     data object Authenticated : AuthState()
     data object Unauthenticated : AuthState()
     data object Loading : AuthState()
-    data class Error (val message : String) : AuthState()
+    data class Error(val message: String) : AuthState()
 }

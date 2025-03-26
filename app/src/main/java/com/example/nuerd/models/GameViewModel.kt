@@ -11,19 +11,21 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.compareTo
+import kotlin.inc
 import kotlin.random.Random
-import kotlin.text.toInt
-import kotlin.times
 
 class GameViewModel(
     application: Application,
     private val highScoreViewModel: HighScoreViewModel
 ) : ViewModel() {
+
     private val db = Room.databaseBuilder(
         application,
         AppDatabase::class.java,
         "app_database"
     ).build()
+
     private val difficultyDao = db.settingsDao()
 
     // Settings for the game:
@@ -39,7 +41,11 @@ class GameViewModel(
         }
     }
 
-    private val _difficultyTime = MutableStateFlow(
+    private val _difficultyTime = MutableStateFlow(10)
+    val difficultyTime: StateFlow<Int> = _difficultyTime.asStateFlow()
+
+        /*
+        MutableStateFlow(
         if (_difficulty.value == 1) {
             10
         } else if (_difficulty.value == 2) {
@@ -71,8 +77,8 @@ class GameViewModel(
             }
         }
     }
-    // val authViewModel = AuthViewModel()
 
+         */
     // Random numbers for the game and the result
     private val _firstNumber = MutableStateFlow(0)
     private val _secondNumber = MutableStateFlow(0)
@@ -121,25 +127,54 @@ class GameViewModel(
     private val _lives = MutableStateFlow(3)
     private val _scoreNumber = MutableStateFlow(0)
     private val _firstGame = MutableStateFlow(true)
+    private val _isPaused = MutableStateFlow(false)
+
+    private val _countDown = MutableStateFlow(0)
+    val countDown: StateFlow<Int> = _countDown.asStateFlow()
 
     val timeRemaining: StateFlow<Int> = _timeRemaining.asStateFlow()
     val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
     val lives: StateFlow<Int> = _lives.asStateFlow()
     val scoreNumber: StateFlow<Int> = _scoreNumber.asStateFlow()
     val firstGame: StateFlow<Boolean> = _firstGame.asStateFlow()
+    val isPaused: StateFlow<Boolean> = _isPaused.asStateFlow()
 
     private var countdownJob: Job? = null
     private var scoreIncreased = 0
+
+    fun countdownStart() {
+        resetGame() // Reset the game state
+        _countDown.value = 3
+        viewModelScope.launch {
+            while (_countDown.value > 0) {
+                delay(1000L)
+                _countDown.value--
+            }
+            _countDown.value = 0
+            startGame() // This will be called after countdown finishes
+        }
+    }
 
     fun correctButton() {
         _scoreNumber.value++
         scoreIncreased++
         if (scoreIncreased >= 5) {
-            _listSize.value++
+            // Hard cap at 5 buttons for stability
+            if (_listSize.value < 6) {
+                _listSize.value++
+                _timeRemaining.value = difficultyTime.value
+                Log.d("GameViewModel", "Increased button count to ${_listSize.value}")
+            } else {
+                _listSize.value = 3
+                if (difficultyTime.value >= 2) {
+                    _difficultyTime.value--
+                }
+                Log.d("GameViewModel", "Maximum safe button count reached (${_listSize.value})")
+            }
             scoreIncreased = 0
         }
-        _timeRemaining.value = difficultyTime.value
-        calculate()  // Calculate new numbers first
+        // _timeRemaining.value = difficultyTime.value
+        calculate()
         countdown()
     }
 
@@ -155,13 +190,25 @@ class GameViewModel(
         _scoreNumber.value = 0
         _timeRemaining.value = difficultyTime.value
         _lives.value = 3
-        _isPlaying.value = false
+        _isPaused.value = false
         scoreIncreased = 0
+        _listSize.value = 3  // Reset to initial value
+    }
+
+    fun resumeGame() {
+        _isPaused.value = false
+        countdown()
     }
 
     fun startGame() {
         _firstGame.value = false
+        _isPaused.value = false
         countdown()
+    }
+
+    fun pauseGame() {
+        _isPaused.value = true
+        countdownJob?.cancel()
     }
 
     fun countdown() {
@@ -187,6 +234,7 @@ class GameViewModel(
             } else if (_lives.value == 0) {
                 highScoreViewModel.saveHighScore(score = _scoreNumber.value)
                 _isPlaying.value = false
+                _difficultyTime.value = 10
             }
         }
     }

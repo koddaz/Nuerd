@@ -41,10 +41,13 @@ fun GameWindow(
     lives: Int,
     first: Int,
     second: Int,
+    isPaused: Boolean,
     isPlaying: Boolean,
     modifier: Modifier = Modifier,
-    onPlayClicked: () -> Unit
+    onPlayClicked: () -> Unit,
+    countDown: Int
 ) {
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -53,11 +56,11 @@ fun GameWindow(
                 color = colorScheme.surface,
                 RoundedCornerShape(8.dp)
             )
-            .background(colorScheme.primary),
+            .background(colorScheme.primary, RoundedCornerShape(8.dp)),
         contentAlignment = Alignment.Center
     ) {
         when {
-            firstGame -> {
+            firstGame && countDown == 0 -> {
                 Text(
                     "Press Play to Start",
                     style = typography.headlineMedium,
@@ -79,12 +82,45 @@ fun GameWindow(
                     CustomIconButton(
                         onPlayClicked = onPlayClicked,
                         imageVector = Icons.Filled.Replay,
-                        tint = colorScheme.error,
+                        tint = colorScheme.onPrimary,
                         contentDescription = "Replay Icon"
                     )
                 }
             }
-            isPlaying -> {
+            isPaused -> {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Paused",
+                        style = typography.headlineMedium,
+                        color = colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            countDown > 0 -> {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = "Get Ready",
+                        style = typography.headlineMedium,
+                        color = colorScheme.onBackground,
+                        textAlign = TextAlign.Center
+                    )
+                    Text(
+                        text = "$countDown",
+                        style = typography.headlineLarge,
+                        color = colorScheme.surface,
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            countDown <= 0 && isPlaying -> {
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -127,6 +163,6 @@ fun GameWindow(
 @Composable
 fun GameWindowPreview() {
     NuerdTheme(theme = "Green") {
-        GameWindow(onPlayClicked = {}, isPlaying = false, first = 0, second = 1, lives = 2, firstGame = true)
+        GameWindow(onPlayClicked = {}, isPlaying = false, first = 0, second = 1, lives = 2, firstGame = true, isPaused = false, countDown = 3)
     }
 }

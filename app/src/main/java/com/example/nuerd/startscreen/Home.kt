@@ -27,35 +27,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nuerd.R
+import com.example.nuerd.models.CustomColumn
 import com.example.nuerd.models.HighScoreEntry
 import com.example.nuerd.ui.theme.NuerdTheme
 
 @Composable
 fun Welcome(allHighScores: List<HighScoreEntry>) {
     Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(8.dp)) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(colorScheme.background, RoundedCornerShape(8.dp))
-            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-            .padding(8.dp)) {
-
+        CustomColumn(title = "Welcome") {
             Text(
-                "Start your journey to become the greatest Nuerd on the planet here",
+                "Are you ready to start your journey to become the greatest Nuerd on the planet?",
                 style = typography.bodyLarge,
                 color = colorScheme.onBackground
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(colorScheme.background, RoundedCornerShape(8.dp))
-            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-            .padding(8.dp)) {
-            Text("Global Top 5", style = typography.titleMedium, color = colorScheme.onBackground)
 
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)))
+        CustomColumn(title = "Global Top 5")
         {
             if (allHighScores.isEmpty()) {
                 Text(
@@ -114,29 +102,17 @@ fun Start(user: String, allHighScores: List<HighScoreEntry>, userHighScore: Int)
 
     Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(8.dp)) {
 
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(8.dp)) {
-
+        CustomColumn(title = "Welcome") {
             Text(
                 "It is nice to see you there $user. Are you ready to take on your Nuerd journey?",
                 style = typography.bodyMedium,
                 color = colorScheme.onBackground
             )
-
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(colorScheme.background, RoundedCornerShape(8.dp))
-            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-            .padding(8.dp)) {
-            Text("Global Top 5", style = typography.titleMedium, color = colorScheme.onBackground)
-
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-        Column(modifier = Modifier.background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)))
-        {
+        CustomColumn(title = "Global Top 5", startPadding = 16.dp) {
             if (allHighScores.isEmpty()) {
                 Text(
                     "No high scores yet",
@@ -153,7 +129,7 @@ fun Start(user: String, allHighScores: List<HighScoreEntry>, userHighScore: Int)
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                .padding(vertical = 8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -184,16 +160,9 @@ fun Start(user: String, allHighScores: List<HighScoreEntry>, userHighScore: Int)
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(8.dp)) {
-            Text("$user's high score: ", style = typography.titleMedium, color = colorScheme.onBackground)
-
-        }
-        Spacer(modifier = Modifier.height(4.dp))
-
-        Column(modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp)).padding(horizontal = 16.dp, vertical = 8.dp)) {
+        CustomColumn(title = "Your High Score", startPadding = 16.dp) {
             Text("$userHighScore", style = typography.bodyMedium, color = colorScheme.onBackground)
         }
-
 
     }
 }

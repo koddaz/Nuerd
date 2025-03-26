@@ -1,5 +1,6 @@
 package com.example.nuerd.account
 
+import android.R
 import android.R.attr.textAlignment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,18 +25,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nuerd.models.AuthViewModel
+import com.example.nuerd.models.CustomColumn
 import com.example.nuerd.ui.theme.NuerdTheme
 import kotlin.reflect.typeOf
 
 @Composable
 fun ConfirmWindow(text: String, authViewModel: AuthViewModel?, onDismiss: () -> Unit) {
-    Column(
-        modifier = Modifier.fillMaxWidth().background(colorScheme.background, RoundedCornerShape(8.dp)).border(width = 2.dp, color = colorScheme.surface, RoundedCornerShape(8.dp)).padding(16.dp)
-    ) {
-        Text(text, color = colorScheme.onPrimary, textAlign = TextAlign.Justify, style = typography.bodyMedium)
+    CustomColumn(title = "Confirm", bg = colorScheme.errorContainer, border = colorScheme.error, textcolor = colorScheme.onErrorContainer) {
+        Text(text, color = colorScheme.onErrorContainer, textAlign = TextAlign.Justify, style = typography.bodyMedium)
         Spacer(modifier = Modifier.height(8.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             EditButton(
+                bgColor = colorScheme.errorContainer,
+                textcolor = colorScheme.surface,
+                useCompactLayout = true,
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Check,
                 onClick = {
@@ -46,6 +49,10 @@ fun ConfirmWindow(text: String, authViewModel: AuthViewModel?, onDismiss: () -> 
             )
             Spacer(modifier = Modifier.padding(horizontal = 4.dp))
             EditButton(
+                bgColor = colorScheme.errorContainer,
+                textcolor = colorScheme.error,
+                borderColor = colorScheme.error,
+                useCompactLayout = true,
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Close,
                 onClick = {

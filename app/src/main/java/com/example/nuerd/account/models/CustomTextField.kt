@@ -41,11 +41,14 @@ fun CustomTextField(
     visual: VisualTransformation = VisualTransformation.None,
     imeAction: ImeAction = ImeAction.Next,
     onImeAction: () -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+    Column(modifier = Modifier.padding(vertical = 2.dp)) {
         var text by remember { mutableStateOf(value) }
         TextField(
+
+            enabled = enabled,
             value = text,
             visualTransformation = visual,
             onValueChange = {
@@ -74,7 +77,7 @@ fun CustomTextField(
             shape = RoundedCornerShape(8.dp),
             modifier = modifier
                 .fillMaxWidth()
-                .border(width = 3.dp, color = colorScheme.surface, shape = RoundedCornerShape(8.dp))
+                .border(width = 2.dp, color = colorScheme.surface, shape = RoundedCornerShape(8.dp))
         )
     }
 }

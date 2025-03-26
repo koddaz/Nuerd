@@ -2,6 +2,7 @@ package com.example.nuerd.account
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -29,6 +30,7 @@ import androidx.compose.ui.unit.dp
 
 import com.example.nuerd.account.models.CustomTextField
 import com.example.nuerd.models.AuthViewModel
+import com.example.nuerd.models.CustomColumn
 import com.example.nuerd.ui.theme.NuerdTheme
 
 @Composable
@@ -39,12 +41,8 @@ fun LogIn(authViewModel: AuthViewModel?, navOnLogin: () -> Unit) {
     val emailFocus = remember { FocusRequester() }
     val passwordFocus = remember { FocusRequester() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colorScheme.secondary)
-            .padding(8.dp)
-            .imePadding()
+    CustomColumn(
+ title = "Sign in"
 
     ) {
         CustomTextField(
@@ -70,17 +68,21 @@ fun LogIn(authViewModel: AuthViewModel?, navOnLogin: () -> Unit) {
             },
             modifier = Modifier.focusRequester(passwordFocus)
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Spacer(modifier = Modifier.weight(2f))
+            EditButton(
+                useCompactLayout = true,
+                modifier = Modifier.weight(1f),
+                onClick = {
+                    authViewModel?.signIn(email, password)
+                    navOnLogin()
+                },
+                title = "Sign In",
+                icon = Icons.Filled.PersonAddAlt
+            )
+        }
 
-        EditButton(
-            onClick = {
-                authViewModel?.signIn(email, password)
-                navOnLogin()
-            },
-            title = "Sign In",
-            icon = Icons.Filled.PersonAddAlt
-        )
-
-        Spacer(modifier = Modifier.height(50.dp))
     }
 }
 

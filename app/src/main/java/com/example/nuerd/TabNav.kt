@@ -1,18 +1,27 @@
-/*
+package com.example.nuerd
+
 import android.annotation.SuppressLint
 import android.app.Application
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,7 +41,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.nuerd.startscreen.HomeScreen
-import com.example.nuerd.account.AccountScreen
 import com.example.nuerd.account.LogIn
 import com.example.nuerd.account.SignUp
 import com.example.nuerd.game.GameScreen
@@ -44,12 +52,16 @@ import com.example.nuerd.models.Routes
 import com.example.nuerd.models.ThemeViewModel
 import com.example.nuerd.models.User
 import com.example.nuerd.models.getCountriesViewModel
-import com.example.nuerd.practie.PracticeNavHost
 import com.example.nuerd.settings.SettingsScreen
+import com.example.nuerd.ui.theme.NuerdTheme
 
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
 
+
+
+
+/*
 // Skapa en class för alla routes och en för navbaritem.
 
 @SuppressLint("UnrememberedMutableState")
