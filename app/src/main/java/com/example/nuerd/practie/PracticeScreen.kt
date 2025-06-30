@@ -66,7 +66,9 @@ fun PracticeScreen(gameViewModel: GameViewModel?) {
     Column(modifier = Modifier
         .fillMaxSize()
         .background(colorScheme.primary)
-        .padding(horizontal = 8.dp)) {
+        .padding(horizontal = 8.dp),
+        verticalArrangement = Arrangement.Center)
+    {
 
 
         Spacer(modifier = Modifier.height(16.dp))

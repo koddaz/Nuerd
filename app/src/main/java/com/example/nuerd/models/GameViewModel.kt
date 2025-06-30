@@ -12,8 +12,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlin.compareTo
+import kotlin.dec
 import kotlin.inc
 import kotlin.random.Random
+import kotlin.text.insert
 
 class GameViewModel(
     application: Application,
@@ -29,6 +31,8 @@ class GameViewModel(
     private val difficultyDao = db.settingsDao()
 
     // Settings for the game:
+    private val _difficultyTime = MutableStateFlow(10)
+    val difficultyTime: StateFlow<Int> = _difficultyTime.asStateFlow()
     private val _difficulty = MutableStateFlow(1)
     val difficulty: StateFlow<Int> = _difficulty.asStateFlow()
 
@@ -37,24 +41,14 @@ class GameViewModel(
             val savedDifficulty = difficultyDao.getDifficulty()
             if (savedDifficulty != null) {
                 _difficulty.value = savedDifficulty.value
+                _difficultyTime.value = when (savedDifficulty.value) {
+                    1 -> 10
+                    2 -> 5
+                    else -> 3
+                }
             }
         }
     }
-
-    private val _difficultyTime = MutableStateFlow(10)
-    val difficultyTime: StateFlow<Int> = _difficultyTime.asStateFlow()
-
-        /*
-        MutableStateFlow(
-        if (_difficulty.value == 1) {
-            10
-        } else if (_difficulty.value == 2) {
-            5
-        } else {
-            3
-        }
-    )
-    val difficultyTime: StateFlow<Int> = _difficultyTime.asStateFlow()
 
     fun setDifficulty(newDifficulty: Int) {
         viewModelScope.launch {
@@ -64,21 +58,11 @@ class GameViewModel(
                 2 -> 5
                 else -> 3
             }
-
-
             difficultyDao.insert(Difficulty(0, newDifficulty))
-
-            if (_difficulty.value == 1) {
-                Log.d("GameViewModel", "Difficulty set to Easy")
-            } else if (_difficulty.value == 2) {
-                Log.d("GameViewModel", "Difficulty set to Medium")
-            } else {
-                Log.d("GameViewModel", "Difficulty set to Hard")
-            }
+            Log.d("GameViewModel", "Difficulty set to $newDifficulty")
         }
     }
 
-         */
     // Random numbers for the game and the result
     private val _firstNumber = MutableStateFlow(0)
     private val _secondNumber = MutableStateFlow(0)
@@ -143,7 +127,10 @@ class GameViewModel(
     private var scoreIncreased = 0
 
     fun countdownStart() {
-        resetGame() // Reset the game state
+        // Only reset if it's the first game or game over
+        if (_firstGame.value || _lives.value == 0) {
+            resetGame()
+        }
         _countDown.value = 3
         viewModelScope.launch {
             while (_countDown.value > 0) {
@@ -151,7 +138,7 @@ class GameViewModel(
                 _countDown.value--
             }
             _countDown.value = 0
-            startGame() // This will be called after countdown finishes
+            startGame()
         }
     }
 
@@ -159,31 +146,23 @@ class GameViewModel(
         _scoreNumber.value++
         scoreIncreased++
         if (scoreIncreased >= 5) {
-            // Hard cap at 5 buttons for stability
-            if (_listSize.value < 6) {
-                _listSize.value++
-                _timeRemaining.value = difficultyTime.value
-                Log.d("GameViewModel", "Increased button count to ${_listSize.value}")
-            } else {
-                _listSize.value = 3
-                if (difficultyTime.value >= 2) {
-                    _difficultyTime.value--
-                }
-                Log.d("GameViewModel", "Maximum safe button count reached (${_listSize.value})")
+            if (_difficultyTime.value > 2) {
+                _difficultyTime.value--
             }
             scoreIncreased = 0
         }
-        // _timeRemaining.value = difficultyTime.value
+        _timeRemaining.value = _difficultyTime.value
         calculate()
         countdown()
     }
 
     fun looseLife() {
-        if (_lives.value == 0) {
-            return
-        } else {
+        if (_lives.value > 0) {
             _lives.value--
-            _timeRemaining.value = difficultyTime.value }
+            if (_lives.value > 0) {
+                _timeRemaining.value = difficultyTime.value
+            }
+        }
     }
 
     fun resetGame() {
@@ -192,7 +171,9 @@ class GameViewModel(
         _lives.value = 3
         _isPaused.value = false
         scoreIncreased = 0
-        _listSize.value = 3  // Reset to initial value
+        _listSize.value = 3
+        _firstGame.value = true
+        _isPlaying.value = false
     }
 
     fun resumeGame() {
@@ -203,6 +184,8 @@ class GameViewModel(
     fun startGame() {
         _firstGame.value = false
         _isPaused.value = false
+        _isPlaying.value = true
+        _timeRemaining.value = difficultyTime.value
         countdown()
     }
 
@@ -212,31 +195,33 @@ class GameViewModel(
     }
 
     fun countdown() {
-        // Cancel any existing countdown
         countdownJob?.cancel()
-
-        if (!_isPlaying.value) {
-            _isPlaying.value = true
-        }
+        if (!_isPlaying.value || _isPaused.value) return
 
         countdownJob = viewModelScope.launch {
-            while (timeRemaining.value > 0 && lives.value > 0) {
+            while (_timeRemaining.value > 0 && _lives.value > 0 && !_isPaused.value) {
                 delay(1000L)
-                if (_timeRemaining.value > 0) {
-                    _timeRemaining.value-- // Decrement time
-                }
+                _timeRemaining.value--
             }
-            // When countdown reaches zero
             if (_timeRemaining.value == 0 && _lives.value > 0) {
                 looseLife()
-                _timeRemaining.value = difficultyTime.value  // Reset timer
-                countdown()  // Start new countdown
+                if (_lives.value > 0) {
+                    _timeRemaining.value = difficultyTime.value
+                    countdown()
+                } else {
+                    endGame()
+                }
             } else if (_lives.value == 0) {
-                highScoreViewModel.saveHighScore(score = _scoreNumber.value)
-                _isPlaying.value = false
-                _difficultyTime.value = 10
+                endGame()
             }
         }
+    }
+
+    private fun endGame() {
+        highScoreViewModel.saveHighScore(score = _scoreNumber.value)
+        _isPlaying.value = false
+        _difficultyTime.value = 10
+        _firstGame.value = true
     }
 
     // Practice

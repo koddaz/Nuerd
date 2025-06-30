@@ -42,7 +42,7 @@ fun LogIn(authViewModel: AuthViewModel?, navOnLogin: () -> Unit) {
     val passwordFocus = remember { FocusRequester() }
 
     CustomColumn(
- title = "Sign in"
+ title = "Sign in",
 
     ) {
         CustomTextField(

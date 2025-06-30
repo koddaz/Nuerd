@@ -1,15 +1,18 @@
 package com.example.nuerd
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
@@ -69,6 +72,13 @@ fun MainScreen(
     val allHighScores by highScoreViewModel?.allHighScores?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val userHighScore by highScoreViewModel?.userHighScore?.collectAsState()  ?: remember { mutableIntStateOf(0) }
 
+    BackHandler {
+        if (isMenuVisible) {
+            isMenuVisible = false
+        } else if (menuChoice == 2 || menuChoice == 3 || menuChoice == 4) {
+            menuChoice = 1
+        }
+    }
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Unauthenticated -> {
@@ -86,81 +96,85 @@ fun MainScreen(
         }
     }
 
-Box(modifier = Modifier.fillMaxSize()) {
-    Scaffold (
-
-        topBar = {
-            CustomTopBar(menuChoice = menuChoice, goHome = { menuChoice = 1 })
-        }
-    ) { padding ->
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .background(colorScheme.primary)
-        ) {
-            // Main content
-
-                    when (menuChoice) {
-                        1 -> HomeScreen(
-                            authState = authState,
-                            userState = userState.value,
-                            allHighScores = allHighScores,
-                            userHighScore = userHighScore
-                        )
-
-                        2 -> PracticeScreen(
-                            gameViewModel = gameViewModel,
-                        )
-
-                        3 -> UserSettings(
-                            authViewModel = authViewModel,
-                            userState = userState.value,
-                            onButtonClick = {
-                                authViewModel?.signOut()
-                                menuChoice = 1
-                            },
-                        )
-
-                        4 -> GameScreen(
-                            gameViewModel = gameViewModel,
-                        )
-
-                        5 -> SettingsScreen(
-                            gameViewModel = gameViewModel,
-                            themeViewModel = themeViewModel
-                        )
-                    }
-                }
-
-                // Bottom navigation
+    Column(modifier = Modifier.fillMaxSize()) {
+        Scaffold (
+            topBar = {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(end = 24.dp, bottom = 12.dp),
-                    contentAlignment = Alignment.BottomEnd
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
                 ) {
+                    CustomTopBar(menuChoice = menuChoice, goHome = { menuChoice = 1 })
+                }
+            }
+        ) { padding ->
+    
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .background(colorScheme.primary)
+            ) {
+                // Main content
+    
+                        when (menuChoice) {
+                            1 -> HomeScreen(
+                                authState = authState,
+                                userState = userState.value,
+                                allHighScores = allHighScores,
+                                userHighScore = userHighScore
+                            )
+    
+                            2 -> PracticeScreen(
+                                gameViewModel = gameViewModel,
+                            )
+    
+                            3 -> UserSettings(
+                                authViewModel = authViewModel,
+                                userState = userState.value,
+                                onButtonClick = {
+                                    authViewModel?.signOut()
+                                    menuChoice = 1
+                                },
+                            )
+    
+                            4 -> GameScreen(
+                                gameViewModel = gameViewModel,
+                            )
+    
+                            5 -> SettingsScreen(
+                                gameViewModel = gameViewModel,
+                                themeViewModel = themeViewModel
+                            )
+                        }
+                    }
+    
+                    // Bottom navigation
                     Box(
                         modifier = Modifier
-                            .size(50.dp)
-
-                            .background(colorScheme.primary, CircleShape)
-                            .border(3.dp, colorScheme.surface, CircleShape)
-                            .clickable { isMenuVisible = true },
-                        contentAlignment = Alignment.Center
+                            .fillMaxSize()
+                            .windowInsetsPadding(WindowInsets.navigationBars)
+                            .padding(end = 24.dp, bottom = 12.dp),
+                        contentAlignment = Alignment.BottomEnd
                     ) {
-                        Icon(
-                            Icons.Default.Menu,
-                            contentDescription = "Menu",
-                            tint = colorScheme.surface
-                        )
+                        Box(
+                            modifier = Modifier
+                                .size(50.dp)
+    
+                                .background(colorScheme.primary, CircleShape)
+                                .border(3.dp, colorScheme.surface, CircleShape)
+                                .clickable { isMenuVisible = true },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                Icons.Default.Menu,
+                                contentDescription = "Menu",
+                                tint = colorScheme.surface
+                            )
+                        }
                     }
-                }
-                }
-
-        }
+                    }
+    
+            }
 
             // Menu overlay
             if (isMenuVisible) {

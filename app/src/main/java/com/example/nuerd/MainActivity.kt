@@ -64,7 +64,6 @@ class MainActivity : ComponentActivity() {
                         .settingsDao()))
             val gameViewModel: GameViewModel = viewModel(factory = GameViewModelFactory(application))
             val authViewModel: AuthViewModel = viewModel()
-            val getCountries: getCountriesViewModel = viewModel()
             val currentTheme by themeViewModel.theme.collectAsState()
 
             NuerdTheme(theme = currentTheme) {

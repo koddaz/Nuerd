@@ -91,6 +91,7 @@ fun GameScreen(
             .fillMaxSize()
             .background(colorScheme.primary)
             .padding(16.dp),
+        verticalArrangement = Arrangement.Center
     ) {
         Column(modifier = Modifier
             .background(colorScheme.background, RoundedCornerShape(8.dp))
@@ -232,17 +233,7 @@ fun GameScreen(
         val lastButtonClickTime = remember { mutableStateOf(0L) }
         val buttonDebounceTime = 200L
 
-        EditButton(
-            onClick = {
-                val currentTime = System.currentTimeMillis()
-                if (currentTime - lastButtonClickTime.value > buttonDebounceTime) {
-                    lastButtonClickTime.value = currentTime
-                    gameViewModel?.correctButton()
-                }
-            },
-            title = "Play",
-            icon = Icons.Filled.PlayArrow
-        )
+
     }
 }
 

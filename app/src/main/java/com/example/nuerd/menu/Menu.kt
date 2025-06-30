@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -60,143 +61,126 @@ fun Menu(
     authenticated: Boolean,
     onClick: (Int) -> Unit,
 ) {
-
     var showSignIn by remember { mutableStateOf(true) }
 
+    // Outermost container fills the screen and centers content
     Column(
-        modifier.wrapContentSize()
+        modifier = modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        // Main menu card
         Column(
-            modifier
-                .fillMaxSize()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorScheme.secondary, RoundedCornerShape(8.dp))
+                .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
                 .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
+            // Menu title
             Column(
-                modifier
+                modifier = Modifier
                     .fillMaxWidth()
-                    .background(colorScheme.secondary, RoundedCornerShape(8.dp))
+                    .background(colorScheme.background, RoundedCornerShape(8.dp))
                     .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-                    .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(16.dp)
             ) {
+                Text(
+                    text = "Menu",
+                    style = typography.displaySmall,
+                    color = colorScheme.onPrimary,
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            EditButton(
+                onClick = { onClick(4) },
+                title = "Play",
+                icon = Icons.Filled.PlayArrow
+            )
+
+            if (!authenticated) {
                 Column(
-                    modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .background(colorScheme.background, RoundedCornerShape(8.dp))
                         .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Menu",
-                        style = typography.displaySmall,
+                        text = "To be able to use the full content of the game you will have to sign up or log in.",
                         color = colorScheme.onPrimary,
+                        style = typography.bodySmall
                     )
                 }
+                Spacer(modifier = Modifier.height(8.dp))
 
-                EditButton(
-                    onClick = { onClick(4) },
-                    title = "Play",
-                    icon = Icons.Filled.PlayArrow
-                )
-                if (!authenticated) {
-
+                // Only this area is scrollable and keyboard-aware
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .imePadding()
+                ) {
+                    if (showSignIn) {
+                        LogIn(
+                            authViewModel = authViewModel,
+                            navOnLogin = { onClick(1) }
+                        )
+                    } else {
+                        SignUp(
+                            authViewModel = authViewModel,
+                            navOnLogin = { onClick(1) }
+                        )
+                    }
                     Column(
-                        modifier
+                        modifier = Modifier
                             .fillMaxWidth()
+                            .padding(top = 8.dp)
                             .background(colorScheme.background, RoundedCornerShape(8.dp))
                             .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = "To be able to use the full content of the game you will have to sign up or log in.",
+                            if (showSignIn) "Don't have an account?" else "Already have an account?",
                             color = colorScheme.onPrimary,
                             style = typography.bodySmall
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            if (showSignIn) "Sign up here" else "Sign in here",
+                            color = colorScheme.secondary,
+                            style = typography.bodyMedium,
+                            modifier = Modifier
+                                .clickable { showSignIn = !showSignIn }
+                                .align(Alignment.End)
+                        )
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Column(
-                        modifier = Modifier
-                            .wrapContentSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
-                        if (showSignIn) {
-                            LogIn(
-                                authViewModel = authViewModel,
-                                navOnLogin = {
-                                    onClick(1)
-                                }
-                            )
-                        } else {
-                            SignUp(
-
-                                authViewModel = authViewModel,
-                                navOnLogin = {
-                                    onClick(1)
-                                },
-
-                            )
-                        }
-                        Column(
-                            modifier
-                                .fillMaxWidth()
-                                .padding(top = 8.dp)
-                                .background(colorScheme.background, RoundedCornerShape(8.dp))
-                                .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-                                .padding(16.dp)
-                        ) {
-                            Text(
-                                if (showSignIn) "Don't have an account?" else "Already have an account?",
-                                color = colorScheme.onPrimary,
-                                style = typography.bodySmall
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                if (showSignIn) "Sign up here" else "Sign in here",
-                                color = colorScheme.secondary,
-                                style = typography.bodyMedium,
-                                modifier = Modifier
-                                    .clickable(onClick = {
-                                        showSignIn = !showSignIn
-                                    }).align(Alignment.End)
-                            )
-                        }
-
-
-
-
-                    }
-
-
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (authenticated) {
-                    EditButton(
-                        modifier = Modifier,
-                        onClick =  { onClick(2) },
-                        title = "Practice",
-                        icon = Icons.Filled.Calculate
-                    )
-                    EditButton(
-                        modifier = Modifier,
-                        onClick = { onClick(3) },
-                        title = "Profile",
-                        icon = Icons.Filled.Person
-                    )
-                    EditButton(
-                        modifier = Modifier,
-                        onClick =  { onClick(5) },
-                        title = "Settings",
-                        icon = Icons.Filled.Settings
-                    )
                 }
             }
 
 
-
+            if (authenticated) {
+                EditButton(
+                    onClick = { onClick(2) },
+                    title = "Practice",
+                    icon = Icons.Filled.Calculate
+                )
+                EditButton(
+                    onClick = { onClick(3) },
+                    title = "Profile",
+                    icon = Icons.Filled.Person
+                )
+                EditButton(
+                    onClick = { onClick(5) },
+                    title = "Settings",
+                    icon = Icons.Filled.Settings
+                )
+            }
         }
     }
 }
@@ -208,7 +192,7 @@ fun HomeScreenPreview() {
     NuerdTheme(theme = "Green") {
         Menu(
 
-            authenticated = false,
+            authenticated = true,
             authViewModel = null,
             onClick = {}
 
