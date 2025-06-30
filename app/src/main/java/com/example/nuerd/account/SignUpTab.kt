@@ -47,27 +47,16 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.nuerd.models.CustomColumn
 
 @Composable
-fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, authViewModel: AuthViewModel?, navOnLogin: () -> Unit) {
+fun SignUp(authViewModel: AuthViewModel?, navOnLogin: () -> Unit) {
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var username by remember { mutableStateOf("") }
-    var country by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
 
     val usernameFocus = remember { FocusRequester() }
     val emailFocus = remember { FocusRequester() }
     val passwordFocus = remember { FocusRequester() }
 
-    val countries = countriesList
     val scrollState = rememberScrollState()
-
-    LaunchedEffect(countries) {
-        if (countries != null) {
-            if (countries.isEmpty()) {
-                getCountries.loadCountries()
-            }
-        }
-    }
 
     CustomColumn(title = "Sign Up") {
         CustomTextField(
@@ -98,68 +87,20 @@ fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, a
             visual = PasswordVisualTransformation(),
             imeAction = ImeAction.Done,
             onImeAction = {
-                authViewModel?.signUp(email, password, username, country)
+                authViewModel?.signUp(email, password, username)
                 navOnLogin()
             },
             modifier = Modifier.focusRequester(passwordFocus)
         )
 
-        Box {
-            Column {
 
-                EditButton(
-                    textSize = typography.bodySmall,
-                    borderColor = colorScheme.surface,
-                    bgColor = colorScheme.secondary,
-                    onClick = { expanded = !expanded },
-                    title = country.ifEmpty { "Country" },
-                    icon = Icons.Default.MoreVert,
-                    iconPlacement = 2,
-                    padding = 16.dp
-                )
-                if (expanded) {
-                    CustomColumn(startPadding = 16.dp) {
-                        Column(modifier = Modifier.height(150.dp).verticalScroll(scrollState)) {
-                            countries?.forEach { countryItem ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable {
-                                            country = countryItem.name.common
-                                            expanded = false
-                                        },
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    if (countriesList == null || countriesList.isEmpty()) {
-                                        Text("Loading countries...", color = colorScheme.onPrimary)
-                                    } else {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(model = countryItem.flags.png),
-                                        contentDescription = "Flag of ${countryItem.name.common}",
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    Text(
-                                        text = countryItem.name.common,
-                                        style = typography.bodySmall,
-                                        modifier = Modifier.padding(start = 8.dp),
-                                        color = colorScheme.onPrimary
-                                    )
-                                        }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
         Row(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.weight(2f))
             EditButton(
                 useCompactLayout = true,
                 modifier = Modifier.weight(1f),
                 onClick = {
-                    authViewModel?.signUp(email, password, username, country)
+                    authViewModel?.signUp(email, password, username)
                     navOnLogin()
                 },
                 title = "Sign Up",
@@ -172,35 +113,12 @@ fun SignUp(getCountries: getCountriesViewModel, countriesList: List<Country>?, a
 @Preview
 @Composable
 fun SignUpPreview() {
-    val mockCountries = listOf(
-        Country(Name("USA"), "US", Flags("https://example.com/usa.png")),
-        Country(Name("Canada"), "CA", Flags("https://example.com/canada.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("USA"), "US", Flags("https://example.com/usa.png")),
-        Country(Name("Canada"), "CA", Flags("https://example.com/canada.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-        Country(Name("Mexico"), "MX", Flags("https://example.com/mexico.png")),
-    )
 
-    val mockViewModel = object : getCountriesViewModel() {
-        init {
-            val countriesLiveData = MutableLiveData<List<Country>>()
-            countriesLiveData.value = mockCountries
-            countries = countriesLiveData
-        }
-    }
 
     NuerdTheme {
         SignUp(
             authViewModel = null,
-            getCountries = mockViewModel,
             navOnLogin = { },
-            countriesList = mockCountries
 
 
         )

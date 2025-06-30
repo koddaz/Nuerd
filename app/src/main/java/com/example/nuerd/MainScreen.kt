@@ -56,7 +56,6 @@ import com.example.nuerd.ui.theme.NuerdTheme
 @Composable
 fun MainScreen(
     highScoreViewModel: HighScoreViewModel? = viewModel(),
-    getCountries: getCountriesViewModel? = viewModel(),
     themeViewModel: ThemeViewModel? = null,
     authViewModel: AuthViewModel? = viewModel(),
     gameViewModel: GameViewModel? = viewModel(),
@@ -67,25 +66,26 @@ fun MainScreen(
     var menuChoice by remember { mutableIntStateOf(1) }
     var isMenuVisible by remember { mutableStateOf(false) }
 
-    val countriesList = getCountries?.countries?.observeAsState()
-
     val allHighScores by highScoreViewModel?.allHighScores?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val userHighScore by highScoreViewModel?.userHighScore?.collectAsState()  ?: remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        getCountries?.loadCountries()
-    }
-
     LaunchedEffect(authState) {
-        if (authState is AuthState.Authenticated) {
-            val uid = FirebaseAuth.getInstance().currentUser?.uid
-            if (uid != null) {
-                authViewModel?.databaseGet(uid) { user ->
-                    userState.value = user
+        when (authState) {
+            is AuthState.Unauthenticated -> {
+                menuChoice = 1
+            }
+            is AuthState.Authenticated -> {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid
+                if (uid != null) {
+                    authViewModel?.databaseGet(uid) { user ->
+                        userState.value = user
+                    }
                 }
             }
+            else -> { /* no-op for Loading or Error */ }
         }
     }
+
 Box(modifier = Modifier.fillMaxSize()) {
     Scaffold (
 
@@ -191,14 +191,12 @@ Box(modifier = Modifier.fillMaxSize()) {
                             ) { /* Intercept clicks */ }
                     ) {
                         Menu(
-                            countries = countriesList?.value,
                             authViewModel = authViewModel,
                             onClick = { choice ->
                                 menuChoice = choice
                                 isMenuVisible = false
                             },
                             authenticated = authState is AuthState.Authenticated,
-                            getCountries = getCountries!!,
                         )
                     }
                 }
@@ -216,7 +214,6 @@ fun DefaultPreview() {
             authViewModel = null,
             themeViewModel = null,
             highScoreViewModel = null,
-            getCountries = null
         )
     }
     }

@@ -80,8 +80,11 @@ fun EditButton(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                 }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                    Text(title, color = textcolor, style = textSize)
+                }
 
-                Text(title, color = textcolor, style = textSize)
+
 
                 if (iconPlacement == 2) {
                     Row(

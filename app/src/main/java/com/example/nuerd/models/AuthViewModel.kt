@@ -107,11 +107,10 @@ open class AuthViewModel: ViewModel() {
         }
     }
 
-    open fun databaseAdd(uid: String, username: String, email: String, country: String) {
+    open fun databaseAdd(uid: String, username: String, email: String) {
         val newUser = User(
             username = username,
             email = email,
-            country = country,
             id = uid
         )
         database.child("Users").child(uid).setValue(newUser)
@@ -136,14 +135,14 @@ open class AuthViewModel: ViewModel() {
             })
     }
 
-    fun signUp(email: String, password: String, username: String, country: String) {
+    fun signUp(email: String, password: String, username: String) {
         _authState.value = AuthState.Loading
         viewModelScope.launch {
             try {
                 val authResult = auth.createUserWithEmailAndPassword(email, password).await()
                 val uid = authResult.user?.uid
                 if (uid != null) {
-                    databaseAdd(uid, username, email, country)
+                    databaseAdd(uid, username, email)
                     _authState.value = AuthState.Authenticated
                 } else {
                     _authState.value = AuthState.Error("User ID is null")

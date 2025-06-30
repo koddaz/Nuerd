@@ -83,7 +83,6 @@ class MainActivity : ComponentActivity() {
                         gameViewModel = gameViewModel,
                         themeViewModel = themeViewModel,
                         authViewModel = authViewModel,
-                        getCountries = getCountries,
                     )
                 }
             }

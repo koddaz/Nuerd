@@ -96,6 +96,7 @@ fun GameScreen(
             .background(colorScheme.background, RoundedCornerShape(8.dp))
             .border(width = 2.dp, color = colorScheme.surface, RoundedCornerShape(8.dp))
             .fillMaxWidth()
+
             .padding(8.dp)) {
             GameWindow(
                 firstGame = firstGame,

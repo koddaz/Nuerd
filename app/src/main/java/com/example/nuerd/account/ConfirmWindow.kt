@@ -2,6 +2,7 @@ package com.example.nuerd.account
 
 import android.R
 import android.R.attr.textAlignment
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -42,8 +43,16 @@ fun ConfirmWindow(text: String, authViewModel: AuthViewModel?, onDismiss: () -> 
                 modifier = Modifier.weight(1f),
                 icon = Icons.Default.Check,
                 onClick = {
-                    authViewModel?.deleteAccount()
-                    authViewModel?.signOut()
+                    authViewModel?.deleteAccount { success, error ->
+                        if (success) {
+                            authViewModel.signOut()
+                            onDismiss()
+                        } else {
+                            Log.e("DeleteAccount", "Error deleting account: $error")
+                        }
+
+                    }
+
 
                 }, title = "Yes"
             )

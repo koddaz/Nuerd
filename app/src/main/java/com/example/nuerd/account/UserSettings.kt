@@ -116,32 +116,27 @@ fun UserSettings(
                 Text("Here you can edit your profile information",
                     style = typography.bodySmall,
                     color = colorScheme.onPrimary)
-                Spacer(modifier = Modifier.padding(vertical = 2.dp))
-                Text("What would you like to do? ",
-                    style = typography.bodySmall,
-                    color = colorScheme.onPrimary)
                 Spacer(modifier = Modifier.padding(vertical = 4.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+
                     EditButton(
-                        modifier = Modifier.weight(1f),
-                        icon = Icons.Default.Delete,
-                        onClick = { isCancelVisible = true },
-                        title = "Delete acc.",
-                        useCompactLayout = true)
-                    Spacer(modifier = Modifier.padding(horizontal = 2.dp))
-                    EditButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.padding(bottom = 2.dp),
                         icon = Icons.Default.Edit,
                         onClick = { isEditVisible = true },
-                        title = "Edit acc.",
-                        useCompactLayout = true)
-                    Spacer(modifier = Modifier.padding(horizontal = 2.dp))
+                        title = "Edit account",
+                        useCompactLayout = false)
                     EditButton(
-                        modifier =  Modifier.weight(1f),
+                        modifier = Modifier.padding(bottom = 2.dp),
                         icon = Icons.AutoMirrored.Filled.Logout,
                         onClick = { onButtonClick() },
                         title = "Sign out",
-                        useCompactLayout = true)
+                        useCompactLayout = false)
+                    EditButton(
+                        modifier = Modifier.padding(bottom = 2.dp),
+                        icon = Icons.Default.Delete,
+                        onClick = { isCancelVisible = true },
+                        title = "Delete account",
+                        useCompactLayout = false)
                 }
             }
         }

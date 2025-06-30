@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Retrofit
@@ -13,25 +14,22 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 data class Country(
-    val name: Name,
-    val cca2: String,
-    val flags: Flags
+    @SerializedName("name") val name: Name? = null,
+    @SerializedName("cca2") val cca2: String? = null,
+    @SerializedName("flags") val flags: Flags? = null
 )
 
 data class Name(
-    val common: String
+    @SerializedName("common") val common: String? = null
 )
 
 data class Flags(
-    val png: String
+    @SerializedName("png") val png: String? = null
 )
 
 interface CountryRepository {
     @GET("v3.1/all")
-    suspend fun getCountries(
-        @Query("region") region: String? = null,
-        @Query("q") query: String? = null
-    ): List<Country>
+    suspend fun getCountries(): List<Country>
 }
 
 open class getCountriesViewModel : ViewModel() {
@@ -49,13 +47,11 @@ open class getCountriesViewModel : ViewModel() {
         loadCountries()
     }
 
-    fun loadCountries(region: String? = null, query: String? = null) {
+    fun loadCountries() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-
-                val countriesList = countryApiService.getCountries(region, query)
-                val flags = countriesList.map { it.flags.png }
-                val sortedCountriesList = countriesList.sortedBy { it.name.common }
+                val countriesList = countryApiService.getCountries()
+                val sortedCountriesList = countriesList.sortedBy { it.name?.common }
                 _countries.postValue(sortedCountriesList)
                 Log.d("Countries", "Countries loaded: $countriesList")
             } catch (e: Exception) {

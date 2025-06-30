@@ -55,8 +55,6 @@ import com.example.nuerd.ui.theme.NuerdTheme
 
 @Composable
 fun Menu(
-    getCountries: getCountriesViewModel,
-    countries: List<Country>?,
     authViewModel: AuthViewModel?,
     modifier: Modifier = Modifier,
     authenticated: Boolean,
@@ -70,7 +68,7 @@ fun Menu(
     ) {
         Column(
             modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -96,8 +94,14 @@ fun Menu(
                         color = colorScheme.onPrimary,
                     )
                 }
+
+                EditButton(
+                    onClick = { onClick(4) },
+                    title = "Play",
+                    icon = Icons.Filled.PlayArrow
+                )
                 if (!authenticated) {
-                    Spacer(modifier = Modifier.height(16.dp))
+
                     Column(
                         modifier
                             .fillMaxWidth()
@@ -112,27 +116,7 @@ fun Menu(
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Column(
-                        modifier
-                            .fillMaxWidth()
-                            .background(colorScheme.background, RoundedCornerShape(8.dp))
-                            .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
-                            .padding(16.dp)
-                    ) {
-                        Text(
-                            if (showSignIn) "Don't have an account?" else "Already have an account?",
-                            color = colorScheme.onPrimary,
-                            style = typography.bodySmall
-                        )
-                        Text(
-                            if (showSignIn) "Sign up here" else "Sign in here",
-                            color = colorScheme.onPrimary,
-                            style = typography.bodySmall,
-                            modifier = Modifier.clickable(onClick = {
-                                showSignIn = !showSignIn
-                            })
-                        )
-                    }
+
                     Column(
                         modifier = Modifier
                             .wrapContentSize()
@@ -147,12 +131,36 @@ fun Menu(
                             )
                         } else {
                             SignUp(
-                                countriesList = countries,
+
                                 authViewModel = authViewModel,
                                 navOnLogin = {
                                     onClick(1)
                                 },
-                                getCountries = getCountries
+
+                            )
+                        }
+                        Column(
+                            modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                                .background(colorScheme.background, RoundedCornerShape(8.dp))
+                                .border(2.dp, colorScheme.surface, RoundedCornerShape(8.dp))
+                                .padding(16.dp)
+                        ) {
+                            Text(
+                                if (showSignIn) "Don't have an account?" else "Already have an account?",
+                                color = colorScheme.onPrimary,
+                                style = typography.bodySmall
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                if (showSignIn) "Sign up here" else "Sign in here",
+                                color = colorScheme.secondary,
+                                style = typography.bodyMedium,
+                                modifier = Modifier
+                                    .clickable(onClick = {
+                                        showSignIn = !showSignIn
+                                    }).align(Alignment.End)
                             )
                         }
 
@@ -164,11 +172,7 @@ fun Menu(
 
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                EditButton(
-                    onClick = { onClick(4) },
-                    title = "Play",
-                    icon = Icons.Filled.PlayArrow
-                )
+
                 if (authenticated) {
                     EditButton(
                         modifier = Modifier,
@@ -204,10 +208,8 @@ fun HomeScreenPreview() {
     NuerdTheme(theme = "Green") {
         Menu(
 
-            authenticated = true,
+            authenticated = false,
             authViewModel = null,
-            countries = null,
-            getCountries = viewModel(),
             onClick = {}
 
         )
