@@ -77,6 +77,7 @@ fun GameScreen(
 
     LaunchedEffect(Unit) {
         gameViewModel?.calculate()
+
     }
 
     LaunchedEffect(gameViewModel?.isPaused?.collectAsState()?.value) {
@@ -212,12 +213,8 @@ fun GameScreen(
                         CustomIconButton(
                             onPlayClicked = {
                                 buttonsViewModel.setPaused(false)
-                                if (firstGame || lives == 0) {
-                                    gameViewModel?.resetGame() // Reset game state if needed
-                                    gameViewModel?.countdownStart() // Start countdown instead of directly starting
-                                } else {
-                                    gameViewModel?.countdownStart() // Always use countdown
-                                }
+                                    gameViewModel?.resetGame()
+                                    gameViewModel?.countdownStart()
                             },
                             imageVector = Icons.Filled.PlayArrow,
                             contentDescription = "Play",
@@ -230,8 +227,7 @@ fun GameScreen(
             }
 
         }
-        val lastButtonClickTime = remember { mutableStateOf(0L) }
-        val buttonDebounceTime = 200L
+
 
 
     }

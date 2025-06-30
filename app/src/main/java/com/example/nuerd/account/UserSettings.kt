@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -48,9 +49,10 @@ fun UserSettings(
         var isEditVisible by remember { mutableStateOf(false) }
 
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
+                .imePadding() // <-- Add this for keyboard avoidance
                 .background(colorScheme.primary)
                 .padding(8.dp)
         ) {
@@ -61,7 +63,6 @@ fun UserSettings(
                         val userProperties = listOf(
                             "Username" to userState.username,
                             "Email" to userState.email,
-                            "Country" to userState.country,
                             "ID" to userState.id
                         )
                         userProperties.forEach { (label, value) ->

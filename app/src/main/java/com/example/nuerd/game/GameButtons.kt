@@ -79,6 +79,8 @@ fun BouncingButton(
     val errorColor = colorScheme.error
     var currentColor by remember { mutableStateOf(primaryColor) }
 
+    val isPaused by gameViewModel?.isPaused?.collectAsState() ?: remember { mutableStateOf(false) }
+
 
 
     LaunchedEffect(allButtons) {
@@ -90,6 +92,7 @@ fun BouncingButton(
             .size(ballSize.dp)
             .offset { IntOffset(animatedX.roundToPx(), animatedY.roundToPx()) }
             .clickable {
+                if (isPaused) return@clickable
                 val currentTime = System.currentTimeMillis()
 
                 if (currentTime - lastClickTime.value > debounceTime) {

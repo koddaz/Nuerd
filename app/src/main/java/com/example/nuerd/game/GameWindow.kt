@@ -163,6 +163,6 @@ fun GameWindow(
 @Composable
 fun GameWindowPreview() {
     NuerdTheme(theme = "Green") {
-        GameWindow(onPlayClicked = {}, isPlaying = false, first = 0, second = 1, lives = 2, firstGame = true, isPaused = false, countDown = 3)
+        GameWindow(onPlayClicked = {}, isPlaying = true, first = 0, second = 1, lives = 2, firstGame = true, isPaused = false, countDown = 3)
     }
 }

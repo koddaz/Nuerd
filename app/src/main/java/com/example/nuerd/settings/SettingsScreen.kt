@@ -24,10 +24,13 @@ fun SettingsScreen(
     gameViewModel: GameViewModel?,
     themeViewModel: ThemeViewModel?)
 {
+    /*
     var soundVolume by remember { mutableStateOf(80) }
     var musicVolume by remember { mutableStateOf(80) }
     var soundEnabled by remember { mutableStateOf(true) }
     var musicEnabled by remember { mutableStateOf(true) }
+    */
+
     var difficulty by remember { mutableStateOf(listOf(1, 2, 3)) }
     var themeList by remember { mutableStateOf(listOf("Green", "Yellow", "Blue"))}
     val selectedDifficulty by gameViewModel?.difficulty?.collectAsState() ?: remember { mutableStateOf(2) }
@@ -36,6 +39,9 @@ fun SettingsScreen(
     val scrollState = rememberScrollState()
 
     Column(modifier = Modifier.fillMaxSize().background(colorScheme.primary).padding(16.dp).verticalScroll(scrollState)) {
+        /*
+
+        REMOVED UNTIL MUSIC AND SOUND ARE IMPLEMENTED
 
         CustomColumn (title = "Volume") {
             SliderModel(
@@ -53,7 +59,7 @@ fun SettingsScreen(
                 onCheckedChange = { soundEnabled = it }
             )
         }
-
+       */
         Spacer(modifier = Modifier.height(16.dp))
 
         CustomColumn (title = "Difficulty") {
@@ -67,7 +73,7 @@ fun SettingsScreen(
                     ) {
                         DifficultyModel(
                             onClick = {
-                               // gameViewModel?.setDifficulty(newDifficulty = value)
+                               gameViewModel?.setDifficulty(newDifficulty = value)
                             },
                             selected = value == currentDifficulty,
                         )

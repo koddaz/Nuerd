@@ -143,6 +143,8 @@ class GameViewModel(
     }
 
     fun correctButton() {
+        if (!isPaused.value) {
+
         _scoreNumber.value++
         scoreIncreased++
         if (scoreIncreased >= 5) {
@@ -153,15 +155,22 @@ class GameViewModel(
         }
         _timeRemaining.value = _difficultyTime.value
         calculate()
-        countdown()
+        countdown() } else {
+            Log.d("GameViewModel", "Game is paused, cannot increase score.")
+        }
     }
 
     fun looseLife() {
-        if (_lives.value > 0) {
-            _lives.value--
+        if (!isPaused.value) {
+
             if (_lives.value > 0) {
-                _timeRemaining.value = difficultyTime.value
+                _lives.value--
+                if (_lives.value > 0) {
+                    _timeRemaining.value = difficultyTime.value
+                }
             }
+        } else {
+            Log.d("GameViewModel", "Game is paused, cannot lose life.")
         }
     }
 
